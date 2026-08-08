@@ -1,0 +1,167 @@
+"""
+FastAPI route handlers.
+
+POST /api/agent/init   — create agent, seed Breeth persona doc, start scheduler
+GET  /api/agent/feed   — read-only; never triggers generation
+"""
+import json
+import uuid
+from datetime import datetime, timezone
+from typing import Optional
+
+from fastapi import APIRouter, HTTPException, Query
+from pydantic import BaseModel
+
+from agent.scheduler import start_agent_job
+from db.models import Agent, Post, get_session
+from mcp_client import get_tool
+
+router = APIRouter(prefix="/api/agent")
+
+
+# ---------------------------------------------------------------------------
+# Request / response schemas
+# ---------------------------------------------------------------------------
+
+class InitRequest(BaseModel):
+    persona_name: str
+    persona_domain: str
+    voice_rules: str = ""
+    recurring_opinions: list[str] = []
+    stable_interests: list[str] = []
+    pushback: list[str] = []
+
+
+class InitResponse(BaseModel):
+    agentId: str
+    message: str
+
+
+class PostOut(BaseModel):
+    id: int
+    agent_id: str
+    text: str
+    media_url: Optional[str]
+    media_type: Optional[str]
+    content_type: str
+    topic_title: Optional[str]
+    topic_url: Optional[str]
+    rationale: Optional[dict]
+    sources: Optional[list[str]]
+    created_at: datetime
+
+
+class FeedResponse(BaseModel):
+    agentId: str
+    posts: list[PostOut]
+    total: int
+
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+async def _seed_breeth_persona(agent_id: str, req: InitRequest) -> None:
+    """
+    Write the initial persona definition into Breeth as an episode so
+    search_graph can find it for continuity context.
+    Uses add_episode (real Breeth tool) — fire and forget (async pipeline).
+    """
+    try:
+        add_tool = get_tool("add_episode")
+        persona_text = (
+            f"Persona: {req.persona_name}. "
+            f"Domain: {req.persona_domain}. "
+            f"Voice: {req.voice_rules}. "
+            f"Recurring opinions: {'; '.join(req.recurring_opinions)}. "
+            f"Interests: {', '.join(req.stable_interests)}. "
+            f"Skeptical of: {', '.join(req.pushback)}."
+        )
+        await add_tool.ainvoke({"text": persona_text})
+    except Exception:
+        # Non-fatal — graph still runs without a seeded persona episode
+        pass
+
+
+# ---------------------------------------------------------------------------
+# Routes
+# ---------------------------------------------------------------------------
+
+@router.post("/init", response_model=InitResponse, status_code=201)
+async def init_agent(req: InitRequest) -> InitResponse:
+    """
+    Create a new autonomous agent row, seed its Breeth persona doc, and
+    register a scheduler job.  Returns immediately — the first tick fires in ~5s.
+    """
+    agent_id = str(uuid.uuid4())
+
+    persona = {
+        "name": req.persona_name,
+        "domain": req.persona_domain,
+        "voice_rules": req.voice_rules,
+        "recurring_opinions": req.recurring_opinions,
+        "stable_interests": req.stable_interests,
+        "pushback": req.pushback,
+    }
+
+    with get_session() as db:
+        agent_row = Agent(
+            id=agent_id,
+            persona_name=req.persona_name,
+            persona_domain=req.persona_domain,
+            persona_json=json.dumps(persona),
+            created_at=datetime.now(timezone.utc),
+        )
+        db.add(agent_row)
+
+    # Seed Breeth (non-blocking on failure)
+    await _seed_breeth_persona(agent_id, req)
+
+    # Start the scheduler job — fires first tick in ~5s
+    start_agent_job(agent_id)
+
+    return InitResponse(
+        agentId=agent_id,
+        message=f"Agent '{req.persona_name}' initialised. First post in ~5 seconds.",
+    )
+
+
+@router.get("/feed", response_model=FeedResponse)
+async def get_feed(
+    agentId: str = Query(..., description="Agent UUID from /init"),
+    limit: int = Query(20, ge=1, le=100),
+    cursor: Optional[int] = Query(None, description="Post ID cursor for pagination"),
+) -> FeedResponse:
+    """
+    Read-only feed endpoint.  Never triggers generation.
+    Returns posts ordered newest-first with optional cursor pagination.
+    """
+    with get_session() as db:
+        agent_row = db.query(Agent).filter(Agent.id == agentId).first()
+        if not agent_row:
+            raise HTTPException(status_code=404, detail=f"Agent '{agentId}' not found")
+
+        query = db.query(Post).filter(Post.agent_id == agentId)
+        if cursor is not None:
+            query = query.filter(Post.id < cursor)
+        rows = query.order_by(Post.created_at.desc()).limit(limit).all()
+        total = db.query(Post).filter(Post.agent_id == agentId).count()
+
+    posts = [
+        PostOut(
+            id=r.id,
+            agent_id=r.agent_id,
+            text=r.text,
+            media_url=r.media_url,
+            media_type=r.media_type,
+            content_type=r.content_type,
+            topic_title=r.topic_title,
+            topic_url=r.topic_url,
+            rationale=json.loads(r.rationale) if r.rationale else None,
+            sources=json.loads(r.sources) if r.sources else None,
+            created_at=r.created_at,
+        )
+        for r in rows
+    ]
+
+    return FeedResponse(agentId=agentId, posts=posts, total=total)
