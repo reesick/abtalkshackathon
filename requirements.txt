@@ -1,0 +1,27 @@
+# Core web — loosen pins to avoid conda conflicts
+fastapi>=0.115.2
+uvicorn[standard]>=0.34.0
+pydantic>=2.10.5
+
+# LangChain ecosystem — target the 1.x series which langchain-mcp-adapters 0.2+ needs
+langchain-core>=1.5.0
+langgraph>=1.2.5
+langchain-aws>=0.2.7
+langchain-mcp-adapters>=0.2.0
+
+# AWS / Bedrock
+boto3>=1.35.0
+botocore>=1.35.0
+
+# Scheduling
+apscheduler==3.10.4
+
+# HTTP + feeds
+aiohttp>=3.10.0
+feedparser==6.0.11
+
+# DB
+sqlalchemy>=2.0.35
+
+# Env
+python-dotenv==1.0.1
