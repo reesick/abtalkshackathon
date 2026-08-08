@@ -126,6 +126,33 @@ async def init_agent(req: InitRequest) -> InitResponse:
     )
 
 
+@router.post("/run")
+async def run_tick_now(agentId: str = Query(...)) -> dict:
+    """Debug: run one tick immediately and return result or error."""
+    import traceback
+    from agent.scheduler import _fetch_memory_context
+    from agent.graph import run_agent_tick
+
+    with get_session() as db:
+        agent_row = db.query(Agent).filter(Agent.id == agentId).first()
+        if not agent_row:
+            raise HTTPException(status_code=404, detail=f"Agent '{agentId}' not found")
+        persona = json.loads(agent_row.persona_json)
+
+    try:
+        persona_doc, memory_context = await _fetch_memory_context(agentId)
+        await run_agent_tick(agentId, persona, persona_doc, memory_context)
+        # check if a post was created
+        with get_session() as db:
+            from db.models import Post
+            post = db.query(Post).filter(Post.agent_id == agentId).order_by(Post.id.desc()).first()
+            if post:
+                return {"status": "ok", "post_id": post.id, "content_type": post.content_type, "topic": post.topic_title, "text": post.text[:300]}
+        return {"status": "ok", "note": "tick ran but no post written — check for silent errors"}
+    except Exception as exc:
+        return {"status": "error", "error": str(exc), "traceback": traceback.format_exc()}
+
+
 @router.get("/feed", response_model=FeedResponse)
 async def get_feed(
     agentId: str = Query(..., description="Agent UUID from /init"),

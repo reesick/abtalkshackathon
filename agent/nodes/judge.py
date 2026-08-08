@@ -51,10 +51,13 @@ async def editorial_judge(state: AgentState) -> AgentState:
         f"- {p.get('text', '')[:120]}" for p in memory_ctx[:5]
     )
 
+    # Escape braces in JSON-serialised values so str.format() doesn't choke
+    # on embedded {key: value} patterns from the persona doc.
+    persona_doc_safe = json.dumps(persona_doc, indent=2)[:800].replace("{", "{{").replace("}", "}}")
     system_prompt = _SYSTEM.format(
         persona_name=persona.get("name", "the persona"),
         persona_domain=persona.get("domain", "AI/tech"),
-        persona_doc_summary=json.dumps(persona_doc, indent=2)[:800],
+        persona_doc_summary=persona_doc_safe,
         recent_posts=recent_posts_text or "(none yet)",
     )
 
