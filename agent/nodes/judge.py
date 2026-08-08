@@ -24,14 +24,14 @@ SCORING CRITERIA (each 0-10)
 RECENT POSTS (do not select topics already covered at these angles)
 {recent_posts}
 
-Return a JSON array — one object per candidate, plus a top-level "selected_index":
+Return a JSON array — one object per candidate with a "selected" boolean:
 [
-  {"title": "...", "score": 7.4, "reason": "...", "selected": false},
-  ...
+  {{"title": "...", "score": 7.4, "reason": "...", "selected": false}},
+  {{"title": "...", "score": 8.1, "reason": "...", "selected": true}}
 ]
-And then on a new line: {{"selected_index": 2}}
 
 Be strict. A score below 5 on any single criterion should block selection.
+Mark exactly one candidate with "selected": true.
 """
 
 
@@ -71,12 +71,11 @@ async def editorial_judge(state: AgentState) -> AgentState:
 
     raw = response.content.strip()
 
-    # Parse the two parts: scores array + selected_index line
+    # Parse the JSON array and find the selected candidate
     try:
+        # Extract JSON array from response
         lines = raw.split("\n")
-        json_lines = [l for l in lines if l.strip().startswith("[") or l.strip().startswith("{")]
         scores_raw = ""
-        selected_raw = ""
         bracket_depth = 0
         collecting = False
         for line in lines:
@@ -87,11 +86,11 @@ async def editorial_judge(state: AgentState) -> AgentState:
                 bracket_depth += line.count("[") - line.count("]")
                 if bracket_depth <= 0:
                     collecting = False
-            elif line.strip().startswith('{"selected_index"'):
-                selected_raw = line.strip()
 
         scores: list[dict] = json.loads(scores_raw.strip())
-        selected_index: int = json.loads(selected_raw).get("selected_index", 0)
+
+        # Find which candidate was selected
+        selected_index = next((i for i, s in enumerate(scores) if s.get("selected")), 0)
     except Exception:
         # Fallback: pick highest-scoring candidate if JSON parse fails
         scores = [{"title": c["title"], "score": 5.0, "reason": "parse_fallback", "selected": False}

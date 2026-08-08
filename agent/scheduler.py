@@ -22,7 +22,7 @@ _scheduler = AsyncIOScheduler()
 _scheduler_started = False
 
 
-async def _fetch_memory_context() -> tuple[dict, list]:
+async def _fetch_memory_context(agent_id: str) -> tuple[dict, list]:
     """
     Pull persona profile + recent published episodes from Breeth.
     Returns (persona_doc, recent_posts_list).
@@ -52,6 +52,11 @@ async def _fetch_memory_context() -> tuple[dict, list]:
 
 async def _tick(agent_id: str) -> None:
     """Single scheduler tick — fetches fresh context, then runs the graph."""
+    from mcp_client import init_mcp_client
+
+    # Ensure MCP client is initialized (needed for nodes that call Breeth/Flora)
+    await init_mcp_client()
+
     with get_session() as db:
         agent_row = db.query(Agent).filter(Agent.id == agent_id).first()
         if not agent_row:
@@ -60,7 +65,7 @@ async def _tick(agent_id: str) -> None:
             return
         persona = json.loads(agent_row.persona_json)
 
-    persona_doc, memory_context = await _fetch_memory_context()
+    persona_doc, memory_context = await _fetch_memory_context(agent_id)
     await run_agent_tick(agent_id, persona, persona_doc, memory_context)
 
 
