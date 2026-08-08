@@ -1,6 +1,29 @@
 from typing import TypedDict, Optional, Literal
 
 
+class MediaAsset(TypedDict):
+    asset_id: str
+    scene_id: str
+    asset_type: str
+    script_beat: str
+    visual_role: str
+    prompt: str
+    reference_asset: list[str]
+    continuity_notes: str
+    reuse: bool
+    status: Literal["planned", "generating", "generated", "validating", "approved", "retry", "rejected"]
+    output_url: Optional[str]
+    validation_notes: Optional[str]
+    retry_count: int
+
+
+class TTSSegment(TypedDict):
+    scene_id: str
+    audio_url: str
+    duration_seconds: float
+    text: str
+
+
 class AgentState(TypedDict):
     # --- identity ---
     agent_id: str
@@ -18,8 +41,11 @@ class AgentState(TypedDict):
 
     # --- generation ---
     script: Optional[dict]            # {hook, beats[], narration, retention_notes}
-    image_assets: list[dict]          # [{url, prompt_used, beat_index}]
+    media_plan: list[MediaAsset]      # structured asset plan (spec section 4/5)
+    image_assets: list[dict]          # [{url, prompt_used, beat_index}] — legacy, kept for text/image post path
     video_asset: Optional[dict]       # {url, prompt_used}
+    tts_segments: list[TTSSegment]    # one per beat (spec section 7.5)
+    omni_prompt: Optional[str]        # structured 9-section master brief (spec section 10), persisted for debugging
 
     # --- publishing ---
     post_text: Optional[str]

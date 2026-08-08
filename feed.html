@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABTalks Feed</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto;
+        }
+
+        body {
+            background: #f0f2f5;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: #fff;
+            padding: 12px 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            color: #0a66c2;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px 16px;
+        }
+
+        .agent-selector {
+            background: #fff;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .agent-selector input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #dce6f1;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .agent-selector button {
+            background: #0a66c2;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .agent-selector button:hover {
+            background: #004182;
+        }
+
+        .post {
+            background: #fff;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .post-header {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0a66c2, #70b5f9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .post-meta {
+            flex: 1;
+        }
+
+        .post-meta .name {
+            font-weight: 600;
+            color: #000;
+            font-size: 14px;
+        }
+
+        .post-meta .title {
+            color: #666;
+            font-size: 12px;
+        }
+
+        .post-content {
+            padding: 0 16px 16px;
+        }
+
+        .post-content .text {
+            color: #000;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .post-content .sources {
+            font-size: 12px;
+            color: #666;
+            padding-top: 8px;
+            border-top: 1px solid #eee;
+        }
+
+        .post-content .sources a {
+            color: #0a66c2;
+            text-decoration: none;
+        }
+
+        .post-actions {
+            padding: 8px 16px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 16px;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        .action-btn:hover {
+            background: #f0f2f5;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            background: #fff;
+            border-radius: 8px;
+        }
+
+        .timestamp {
+            font-size: 12px;
+            color: #666;
+            padding: 0 16px 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>ABTalks</h1>
+    </div>
+
+    <div class="container">
+        <div id="feed">
+            <div class="loading">Loading...</div>
+        </div>
+    </div>
+
+    <script>
+        function getInitials(name) {
+            if (!name) return 'AB';
+            return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+        }
+
+        function timeAgo(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            const now = new Date();
+            const diff = Math.floor((now - date) / 1000);
+
+            if (diff < 60) return 'just now';
+            if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+            if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+            if (diff < 604800) return Math.floor(diff / 86400) + 'd ago';
+            return date.toLocaleDateString();
+        }
+
+        async function loadFeed() {
+            let currentAgentId;
+            // First, get the latest agent ID
+            try {
+                const agentRes = await fetch('/api/agent/latest-agent');
+                const agentData = await agentRes.json();
+                
+                if (!agentData.agentId) {
+                    document.getElementById('feed').innerHTML = '<div class="empty">No agents found. Initialize one with: <br><code>curl -X POST http://localhost:8000/api/agent/init -H "Content-Type: application/json" -d "{\\"persona_name\\": \\"Ada Shen\\", \\"persona_domain\\": \\"ML infrastructure\\", \\"voice_rules\\": \\"terse\\"}"</code></div>';
+                    return;
+                }
+                
+                currentAgentId = agentData.agentId;
+            } catch (e) {
+                document.getElementById('feed').innerHTML = '<div class="empty">Error loading agent: ' + e.message + '</div>';
+                return;
+            }
+
+            const feed = document.getElementById('feed');
+            feed.innerHTML = '<div class="loading">Loading posts...</div>';
+
+            try {
+                const response = await fetch(`/api/agent/feed?agentId=${currentAgentId}&limit=10`);
+                if (!response.ok) {
+                    const err = await response.json();
+                    throw new Error(err.detail || 'Failed to load feed');
+                }
+                const data = await response.json();
+
+                if (!data.posts || data.posts.length === 0) {
+                    feed.innerHTML = '<div class="empty">No posts yet. Initialize an agent first!</div>';
+                    return;
+                }
+
+                feed.innerHTML = data.posts.map(post => `
+                    <div class="post">
+                        <div class="post-header">
+                            <div class="avatar">${getInitials(data.personaName || 'AB')}</div>
+                            <div class="post-meta">
+                                <div class="name">${data.personaName || 'AI Agent'}</div>
+                                <div class="title">${data.personaDomain || 'Tech'}</div>
+                            </div>
+                        </div>
+                        <div class="timestamp">${post.created_at ? timeAgo(post.created_at) : ''}</div>
+                        <div class="post-content">
+                            <div class="text">${post.text || ''}</div>
+                            ${post.sources && post.sources.length ? `
+                                <div class="sources">
+                                    Sources: ${post.sources.filter(s => s).map(s => {
+                                        try {
+                                            return '<a href="' + s + '" target="_blank">' + new URL(s).hostname + '</a>';
+                                        } catch {
+                                            return '<span>' + s + '</span>';
+                                        }
+                                    }).join(', ')}
+                                </div>
+                            ` : ''}
+                        </div>
+                        <div class="post-actions">
+                            <button class="action-btn">👍 Like</button>
+                            <button class="action-btn">💬 Comment</button>
+                            <button class="action-btn">🔄 Share</button>
+                            <button class="action-btn">✈️ Send</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                feed.innerHTML = `<div class="empty">Error: ${error.message}</div>`;
+            }
+        }
+
+        // Auto-load feed on page load
+        loadFeed();
+    </script>
+</body>
+</html>

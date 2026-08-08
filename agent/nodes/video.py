@@ -1,98 +1,79 @@
 """
-assemble_video node — sends frames + narration to Google Omni via Flora MCP.
-
-Flora tool expected signature:
-  google_omni_assemble(
-      frames: list[str],        # list of image URLs from nano banana 2
-      narration: str,           # full VO script text
-      audio_direction: str,     # sound/music/SFX direction
-      output_format: str,       # "mp4"
-  ) -> {url: str, duration_seconds: float}
-
-On timeout or error → sets video_asset = None so the graph degrades to
-image_post (first frame stays as the media asset).
+assemble_video node — real Flora REST API call, trying Gemini-Omni-Flash
+first, falling back to Seedance 2.0 Reference (Fast) if Omni's pricing/
+generation step rejects the request (observed failure: "Could not price
+this generation" when passing image_urls — Omni's params schema doesn't
+list an image-input field, unlike Seedance's which is also unconfirmed but
+worth trying since duration/resolution/aspect_ratio are all supported there).
 """
-import asyncio
 import logging
+import os
 
+import aiohttp
+
+from agent.flora_client import FloraGenerationError, generate_and_wait
 from agent.state import AgentState
-from mcp_client import get_tool
 
 logger = logging.getLogger(__name__)
 
-ASSEMBLY_TIMEOUT = 90  # seconds — Google Omni is the slowest step
+FLORA_VIDEO_MODEL_PRIMARY = os.environ.get("FLORA_VIDEO_MODEL", "r2v-gengateway-omni-flash-gg")
+FLORA_VIDEO_MODEL_FALLBACK = os.environ.get("FLORA_VIDEO_MODEL_FALLBACK", "r2v-seedance-2.0-fast-enhancor")
 
 
-def _audio_direction(script: dict, persona: dict) -> str:
-    """
-    Build a concise audio/sound direction string from script retention notes
-    and persona domain.  Kept short — Omni doesn't need a novel here.
-    """
-    domain = persona.get("domain", "AI/tech")
-    notes = script.get("retention_notes", "")
-    return (
-        f"Ambient, minimal electronic background music fitting a {domain} explainer. "
-        f"No lyrics. Slight build toward the CTA moment. {notes}"
-    ).strip()
+async def _try_model(session: aiohttp.ClientSession, model: str, omni_prompt: str, frame_urls: list[str]) -> dict:
+    """One attempt against a specific model. Raises on failure."""
+    params: dict = {"image_urls": frame_urls}
+    if model == FLORA_VIDEO_MODEL_PRIMARY:
+        params["aspect_ratio"] = "9:16"
+    else:
+        params.update({"aspect_ratio": "auto", "resolution": "720p", "duration": "12"})
+
+    result = await generate_and_wait(
+        session,
+        gen_type="video",
+        prompt=omni_prompt,
+        model=model,
+        params=params,
+    )
+    outputs = result.get("outputs") or []
+    if not outputs:
+        raise FloraGenerationError(f"no outputs in completed run for model={model}")
+    return {
+        "url": outputs[0]["url"],
+        "prompt_used": omni_prompt[:200] + "...",
+        "model_used": model,
+    }
 
 
 async def assemble_video(state: AgentState) -> AgentState:
     """
-    Assemble frames + narration into a final video via Google Omni (Flora MCP).
-
-    Degradation: if no frames are available or assembly fails, sets
-    video_asset = None and demotes content_type to "image_post" (if frames
-    exist) or "text_post" (if no frames either).
+    Try Gemini-Omni-Flash first (per user's explicit request to attempt Omni
+    before falling back). On any failure, retry once against Seedance 2.0
+    Reference (Fast). Degradation: if both fail, fall back to image_post.
     """
-    script = state.get("script") or {}
-    image_assets = state.get("image_assets") or []
+    omni_prompt = state.get("omni_prompt")
+    media_plan = state.get("media_plan") or []
+    approved = [a for a in media_plan if a["status"] == "approved"]
 
-    # Nothing to assemble
-    if not image_assets:
-        return {**state, "video_asset": None, "content_type": "text_post"}
-
-    frame_urls = [a["url"] for a in image_assets if a.get("url")]
-    narration = script.get("narration", script.get("hook", ""))
-
-    if not narration:
-        logger.warning("assemble_video: no narration in script — degrading to image_post")
+    if not omni_prompt or not approved:
+        logger.warning("assemble_video: missing omni_prompt or approved assets — degrading to image_post")
         return {**state, "video_asset": None, "content_type": "image_post"}
 
-    try:
-        tool = get_tool("google_omni_assemble")
-    except KeyError:
-        logger.error("assemble_video: google_omni_assemble tool not registered in Flora MCP")
-        return {**state, "video_asset": None, "content_type": "image_post"}
+    frame_urls = [a["output_url"] for a in approved]
 
-    audio_dir = _audio_direction(script, state["persona"])
+    async with aiohttp.ClientSession() as session:
+        try:
+            logger.info("assemble_video: trying primary model %s", FLORA_VIDEO_MODEL_PRIMARY)
+            video_asset = await _try_model(session, FLORA_VIDEO_MODEL_PRIMARY, omni_prompt, frame_urls)
+            logger.info("assemble_video: assembled with primary model — %s", video_asset["url"])
+            return {**state, "video_asset": video_asset}
+        except Exception as exc:
+            logger.warning("assemble_video: primary model %s failed — %s — trying fallback", FLORA_VIDEO_MODEL_PRIMARY, exc)
 
-    try:
-        result = await asyncio.wait_for(
-            tool.ainvoke({
-                "frames": frame_urls,
-                "narration": narration,
-                "audio_direction": audio_dir,
-                "output_format": "mp4",
-            }),
-            timeout=ASSEMBLY_TIMEOUT,
-        )
-        url = result.get("url") if isinstance(result, dict) else str(result)
-        duration = result.get("duration_seconds") if isinstance(result, dict) else None
-
-        video_asset = {
-            "url": url,
-            "prompt_used": f"frames={len(frame_urls)}, narration_chars={len(narration)}",
-            "duration_seconds": duration,
-        }
-        logger.info("assemble_video: assembled %s (%.1fs)", url, duration or 0)
-        return {**state, "video_asset": video_asset}
-
-    except asyncio.TimeoutError:
-        logger.warning(
-            "assemble_video: Google Omni timed out after %ds — degrading to image_post",
-            ASSEMBLY_TIMEOUT,
-        )
-        return {**state, "video_asset": None, "content_type": "image_post"}
-    except Exception as exc:
-        logger.warning("assemble_video: assembly failed — %s — degrading to image_post", exc)
-        return {**state, "video_asset": None, "content_type": "image_post"}
+        try:
+            video_asset = await _try_model(session, FLORA_VIDEO_MODEL_FALLBACK, omni_prompt, frame_urls)
+            logger.info("assemble_video: assembled with fallback model — %s", video_asset["url"])
+            return {**state, "video_asset": video_asset}
+        except Exception as exc:
+            logger.warning("assemble_video: fallback model %s also failed — %s — degrading to image_post", FLORA_VIDEO_MODEL_FALLBACK, exc)
+            return {**state, "video_asset": None, "content_type": "image_post"}

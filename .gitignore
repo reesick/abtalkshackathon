@@ -10,3 +10,12 @@ build/
 *.egg-info/
 *.log
 
+# Pipeline run artifacts — generated media, state dumps, test scratch output.
+# Regenerable from source; not meant to be version-controlled.
+full_run_output/
+refiamegs/
+_stage1_state.json
+_stage2_state.json
+_*_state.json
+test_outputs.txt
+

@@ -7,11 +7,14 @@ Lifespan:
 """
 import logging
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from dotenv import load_dotenv
 load_dotenv()  # must run before any os.environ reads
 
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 
 from api.routes import router
 from db.models import create_tables
@@ -45,3 +48,8 @@ app.include_router(router)
 @app.get("/health")
 async def health():
     return {"status": "ok"}
+
+
+@app.get("/")
+async def index():
+    return FileResponse("feed.html")

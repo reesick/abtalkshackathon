@@ -1,83 +1,111 @@
 """
-generate_assets node — calls Flora MCP (nano banana 2) for each script beat.
+generate_assets node — real Flora REST API image generation (Nano Banana 2),
+replacing the broken MCP-based placeholder. Uses the layered prompt
+architecture from spec section 5 and the locked style reference from
+style_reference.py.
 
-Flora tool expected signature:
-  nano_banana_2_generate(prompt: str, width: int, height: int) -> {url: str}
-
-Falls back gracefully: if Flora is unavailable or times out, sets
-state["content_type"] to "text_post" so the graph skips the video path entirely.
+Confirmed working model/params tonight:
+  model: is2i-gemini-3.1-flash-image (images-to-image, multi-ref)
+  params: {aspect_ratio, resolution, image_urls}
 """
 import asyncio
 import logging
 
-from agent.state import AgentState
-from mcp_client import get_tool
+import aiohttp
+
+from agent.flora_client import FloraGenerationError, generate_and_wait
+from agent.state import AgentState, MediaAsset
+from agent.style_reference import STYLE_GRAMMAR, STYLE_REFERENCE_IMAGES, build_negative_constraints
 
 logger = logging.getLogger(__name__)
 
-FRAME_WIDTH = 1280
-FRAME_HEIGHT = 720
-TOOL_TIMEOUT = 45  # seconds per frame
+MODEL_PRIMARY = "is2i-gemini-3.1-flash-image"       # Nano Banana 2, with refs
+MODEL_FALLBACK = "is2i-nano-banana-2-lite-is2i-google-gemini"  # cheaper retry
+MAX_RETRIES = 2
 
 
-async def _generate_frame(tool, beat: dict, index: int) -> dict | None:
-    """Generate one frame image for a single script beat. Returns None on failure."""
-    visual_idea = beat.get("visual_idea", beat.get("beat", "abstract background"))
-    prompt = (
-        f"Cinematic still frame for a short-form tech video. "
-        f"Scene: {visual_idea}. "
-        f"Style: clean, modern, high contrast. No text overlay. 16:9."
-    )
-    try:
-        result = await asyncio.wait_for(
-            tool.ainvoke({
-                "prompt": prompt,
-                "width": FRAME_WIDTH,
-                "height": FRAME_HEIGHT,
-            }),
-            timeout=TOOL_TIMEOUT,
-        )
-        url = result.get("url") if isinstance(result, dict) else str(result)
-        return {"url": url, "prompt_used": prompt, "beat_index": index}
-    except asyncio.TimeoutError:
-        logger.warning("generate_assets: frame %d timed out (>%ds)", index, TOOL_TIMEOUT)
-        return None
-    except Exception as exc:
-        logger.warning("generate_assets: frame %d failed — %s", index, exc)
-        return None
+def build_asset_prompt(media_asset: MediaAsset) -> str:
+    """
+    Layered prompt construction per spec section 5's table:
+    Subject/action -> Materials -> Depth/shadows -> Palette -> Lighting/camera
+    -> Style/frame -> Continuity -> Negative constraints
+    """
+    return (
+        f"{STYLE_GRAMMAR['rendering_method']}: a figure with "
+        f"{STYLE_GRAMMAR['character_construction']}, "
+        f"{media_asset['visual_role']}. "
+        f"{STYLE_GRAMMAR['materials']}. "
+        f"{STYLE_GRAMMAR['depth']}. "
+        f"Palette: {STYLE_GRAMMAR['palette']}. "
+        f"{STYLE_GRAMMAR['lighting']}, {STYLE_GRAMMAR['camera']}. "
+        f"{STYLE_GRAMMAR['editorial_reference']}. {STYLE_GRAMMAR['frame']}. "
+        f"{media_asset.get('continuity_notes', '')} "
+        f"{build_negative_constraints()}"
+    ).strip()
+
+
+async def _generate_one(session: aiohttp.ClientSession, media_asset: MediaAsset) -> MediaAsset:
+    prompt = build_asset_prompt(media_asset)
+    updated = {**media_asset, "prompt": prompt, "status": "generating"}
+
+    model = MODEL_PRIMARY
+    last_exc: Exception | None = None
+
+    for attempt in range(MAX_RETRIES + 1):
+        try:
+            result = await generate_and_wait(
+                session,
+                gen_type="image",
+                prompt=prompt,
+                model=model,
+                params={
+                    "aspect_ratio": "9:16",
+                    "resolution": "2K",
+                    "image_urls": STYLE_REFERENCE_IMAGES,
+                },
+            )
+            outputs = result.get("outputs") or []
+            if not outputs:
+                raise FloraGenerationError("no outputs in completed run")
+            updated["output_url"] = outputs[0]["url"]
+            updated["status"] = "generated"
+            return updated
+        except Exception as exc:
+            last_exc = exc
+            logger.warning(
+                "generate_assets: %s attempt %d/%d failed — %s",
+                media_asset["asset_id"], attempt + 1, MAX_RETRIES + 1, exc,
+            )
+            model = MODEL_FALLBACK  # switch to fallback on retry, per plan section 6
+
+    updated["status"] = "rejected"
+    updated["validation_notes"] = f"generation failed after {MAX_RETRIES + 1} attempts: {last_exc}"
+    return updated
 
 
 async def generate_assets(state: AgentState) -> AgentState:
     """
-    Generate one image per beat in state["script"]["beats"] via Flora
-    nano banana 2.
-
-    Degradation logic:
-    - If ALL frames fail → content_type → "text_post", image_assets = []
-    - If SOME frames fail → keep successful ones, content_type stays
-      (video assembler will skip missing beats)
+    Generate one image per planned media asset, in parallel.
+    Degradation: if ALL assets fail -> content_type -> text_post.
     """
-    script = state.get("script")
-    if not script:
-        return {**state, "image_assets": [], "content_type": "text_post"}
+    media_plan = state.get("media_plan") or []
+    if not media_plan:
+        return {**state, "media_plan": [], "content_type": "text_post"}
 
-    beats: list[dict] = script.get("beats", [])
-    if not beats:
-        return {**state, "image_assets": [], "content_type": "text_post"}
+    async with aiohttp.ClientSession() as session:
+        tasks = [_generate_one(session, asset) for asset in media_plan]
+        results = await asyncio.gather(*tasks)
 
-    try:
-        tool = get_tool("nano_banana_2_generate")
-    except KeyError:
-        logger.error("generate_assets: nano_banana_2_generate tool not registered in Flora MCP")
-        return {**state, "image_assets": [], "content_type": "text_post"}
+    approved = [r for r in results if r["status"] == "generated"]
 
-    tasks = [_generate_frame(tool, beat, i) for i, beat in enumerate(beats)]
-    results = await asyncio.gather(*tasks)
+    if not approved:
+        logger.warning("generate_assets: all assets failed — degrading to text_post")
+        return {**state, "media_plan": results, "image_assets": [], "content_type": "text_post"}
 
-    image_assets = [r for r in results if r is not None]
+    # Keep legacy image_assets shape populated for the image_post path (write_post reads this)
+    image_assets = [
+        {"url": a["output_url"], "prompt_used": a["prompt"], "beat_index": i}
+        for i, a in enumerate(results) if a["status"] == "generated"
+    ]
 
-    if not image_assets:
-        logger.warning("generate_assets: all frames failed — degrading to text_post")
-        return {**state, "image_assets": [], "content_type": "text_post"}
-
-    return {**state, "image_assets": image_assets}
+    return {**state, "media_plan": results, "image_assets": image_assets}

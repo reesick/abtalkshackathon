@@ -5,13 +5,16 @@ load_dotenv()
 
 import boto3
 
-api_key = os.environ["BEDROCK_API_KEY"]
-region  = os.environ.get("AWS_REGION", "us-east-1")
+# Use AWS credentials (not Bedrock API key)
+aws_access_key = os.environ["AWS_ACCESS_KEY_ID"]
+aws_secret_key = os.environ["AWS_SECRET_ACCESS_KEY"]
+region         = os.environ.get("AWS_REGION", "us-east-1")
 
 client = boto3.client(
     "bedrock",
     region_name=region,
-    api_key=api_key,
+    aws_access_key_id=aws_access_key,
+    aws_secret_access_key=aws_secret_key,
 )
 
 try:

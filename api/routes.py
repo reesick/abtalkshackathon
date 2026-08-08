@@ -53,6 +53,8 @@ class PostOut(BaseModel):
 
 class FeedResponse(BaseModel):
     agentId: str
+    personaName: Optional[str] = None
+    personaDomain: Optional[str] = None
     posts: list[PostOut]
     total: int
 
@@ -163,6 +165,21 @@ async def get_feed(
     Read-only feed endpoint.  Never triggers generation.
     Returns posts ordered newest-first with optional cursor pagination.
     """
+    return await _get_feed_for_agent(agentId, limit, cursor)
+
+
+@router.get("/latest-agent")
+async def get_latest_agent():
+    """Get the most recently created agent."""
+    with get_session() as db:
+        agent = db.query(Agent).order_by(Agent.created_at.desc()).first()
+        if not agent:
+            return {"agentId": None}
+        return {"agentId": agent.id, "personaName": agent.persona_name}
+
+
+async def _get_feed_for_agent(agentId: str, limit: int, cursor: Optional[int]) -> FeedResponse:
+    """Internal helper to get feed for a specific agent."""
     with get_session() as db:
         agent_row = db.query(Agent).filter(Agent.id == agentId).first()
         if not agent_row:
@@ -174,21 +191,31 @@ async def get_feed(
         rows = query.order_by(Post.created_at.desc()).limit(limit).all()
         total = db.query(Post).filter(Post.agent_id == agentId).count()
 
-    posts = [
-        PostOut(
-            id=r.id,
-            agent_id=r.agent_id,
-            text=r.text,
-            media_url=r.media_url,
-            media_type=r.media_type,
-            content_type=r.content_type,
-            topic_title=r.topic_title,
-            topic_url=r.topic_url,
-            rationale=json.loads(r.rationale) if r.rationale else None,
-            sources=json.loads(r.sources) if r.sources else None,
-            created_at=r.created_at,
-        )
-        for r in rows
-    ]
+        # Build PostOut objects INSIDE the session to avoid DetachedInstanceError
+        posts = [
+            PostOut(
+                id=r.id,
+                agent_id=r.agent_id,
+                text=r.text,
+                media_url=r.media_url,
+                media_type=r.media_type,
+                content_type=r.content_type,
+                topic_title=r.topic_title,
+                topic_url=r.topic_url,
+                rationale=json.loads(r.rationale) if r.rationale else None,
+                sources=json.loads(r.sources) if r.sources else None,
+                created_at=r.created_at,
+            )
+            for r in rows
+        ]
 
-    return FeedResponse(agentId=agentId, posts=posts, total=total)
+        persona_name = agent_row.persona_name
+        persona_domain = agent_row.persona_domain
+
+    return FeedResponse(
+        agentId=agentId,
+        personaName=persona_name,
+        personaDomain=persona_domain,
+        posts=posts,
+        total=total
+    )

@@ -26,14 +26,24 @@ Rules:
 """
 
 _VIDEO_INSTRUCTION = """\
-Write the caption that accompanies this short video:
+Write the caption that accompanies this short (10-12 second) hook/teaser video:
 Title: {title}
+Source: {source_url}
 Video hook: {hook}
+Full topic summary: {summary}
+
+The video only delivers a hook line and one stance — it does not explain the
+full story. This caption is where the rest of the substance lives: the
+context the video didn't have time for, why it matters, and the source link.
 
 Rules:
-- 1-3 short sentences max
-- Complement the video; do not re-narrate it
-- End with the one thing a viewer should take away
+- Do not repeat the video's hook line verbatim
+- Give the reader the context/detail the video skipped — what actually
+  happened, why it matters, any concrete numbers or specifics from the summary
+- End with the source link on its own line
+- One clear stance, consistent with the video's stance — not a contradiction
+- No hashtags unless they are genuinely indexing terms
+- No "swipe up", "link in bio", or engagement-bait phrasing
 """
 
 _TEXT_INSTRUCTION = """\
@@ -76,7 +86,9 @@ async def write_post(state: AgentState) -> AgentState:
     elif content_type == "video_post":
         human_msg = _VIDEO_INSTRUCTION.format(
             title=topic.get("title", ""),
+            source_url=topic.get("url", ""),
             hook=script.get("hook", ""),
+            summary=topic.get("summary", "")[:500],
         )
     else:
         human_msg = _TEXT_INSTRUCTION.format(
