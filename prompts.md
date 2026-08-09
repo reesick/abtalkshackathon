@@ -1042,3 +1042,45 @@ If that still fails with `fastapi` not found, the venv install didn't complete â
 ```
 
 Then start the server with `.venv\Scripts\python -m uvicorn main:app --reload`.
+
+---
+
+## Deployment Guide (Vercel & Render)
+
+### Added Deployment Configuration Files
+- `vercel.json`: Vercel serverless routing configuration mapping all requests to `api/index.py`.
+- `api/index.py`: ASGI entrypoint for Vercel Python runtime.
+- `render.yaml`: Render Web Service blueprint configuration.
+- `main.py`: Updated static route for `feed.html` using `BASE_DIR` for cross-environment compatibility.
+
+### Deployment Process for Contributors & Maintainers
+
+#### Option 1: Direct Vercel CLI Upload (Fastest â€” No GitHub Repo Access Needed)
+```bash
+# 1. Initialize Vercel deployment from local folder
+npx vercel
+
+# 2. Deploy to Production
+npx vercel --prod
+```
+
+#### Option 2: Deploy via Personal GitHub Fork
+```bash
+# 1. Add your fork as a git remote
+git remote add myfork https://github.com/<YOUR_GITHUB_USERNAME>/abtalkshackathon.git
+
+# 2. Stage and commit deployment files
+git add vercel.json api/index.py render.yaml main.py
+git commit -m "Add Vercel and Render deployment configurations"
+
+# 3. Push to your fork
+git push myfork main
+```
+Then import your fork at **[vercel.com/new](https://vercel.com/new)** or **[dashboard.render.com](https://dashboard.render.com)**.
+
+#### Environment Variables Checklist
+Configure these in Vercel / Render Project Settings:
+- `BREETH_API_KEY`
+- `FLORA_API_KEY`
+- `ELEVENLABS_API_KEY`
+- `BEDROCK_API_KEY` / `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`

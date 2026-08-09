@@ -257,29 +257,24 @@ def _sanitize(text: str) -> str:
     # Unwrap "**Source:**" / "**Source**:" back to "Source:" — keep the
     # line, drop the bold markers, before the catch-all stripper runs.
     text = _BOLD_SOURCE_LABEL_RE.sub("Source:", text)
+    # Strip LLM preamble headers like "Your new draft:"
+    text = re.sub(r"^(Your new draft|Here is the updated post|Revised draft):\s*", "", text, flags=re.IGNORECASE).strip()
+    # Strip trailing LLM meta-talk paragraphs like "This draft now has a first-person voice..."
+    text = re.sub(r"\n\n(This draft|Note:|This revision|The above post).*", "", text, flags=re.DOTALL | re.IGNORECASE).strip()
     # Strip bullet-list markers that read like corporate slide fragments.
     text = _BULLET_LIST_RE.sub("", text)
     # Catch-all: remove any remaining stray markdown emphasis asterisks
-    # left over from partially-matched labels (e.g. an orphaned "**" alone
-    # on a line, or "** Some text" with no matching close). Safe to run
-    # broadly since a legitimate post should never contain literal
-    # asterisks as prose punctuation.
     text = _STRAY_MARKDOWN_BOLD_RE.sub("", text)
     # Strip angle brackets wrapped around bare URLs.
     text = _ANGLE_BRACKET_URL_RE.sub(r"\1", text)
     # Em dashes are banned outright — replace with a comma or period
-    # depending on surrounding spacing, defaulting to a comma.
     text = text.replace(" — ", ", ").replace("—", ", ")
     # Collapse any resulting double spaces/blank-line artifacts
     text = re.sub(r"[ \t]{2,}", " ", text)
     text = re.sub(r"\n{3,}", "\n\n", text)
-    # A line left completely empty by the stripping above (e.g. a line
-    # that was ONLY "**") collapses to whitespace — drop fully blank lines
-    # that aren't intentional paragraph breaks (more than one in a row is
-    # already collapsed above; this catches single stray empty lines with
-    # trailing spaces).
     text = re.sub(r"[ \t]+\n", "\n", text)
     return text.strip()
+
 
 
 _TEXT_INSTRUCTION = """\

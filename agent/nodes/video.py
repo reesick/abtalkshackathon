@@ -22,11 +22,14 @@ FLORA_VIDEO_MODEL_FALLBACK = os.environ.get("FLORA_VIDEO_MODEL_FALLBACK", "r2v-s
 
 async def _try_model(session: aiohttp.ClientSession, model: str, omni_prompt: str, frame_urls: list[str]) -> dict:
     """One attempt against a specific model. Raises on failure."""
-    params: dict = {"image_urls": frame_urls}
-    if model == FLORA_VIDEO_MODEL_PRIMARY:
-        params["aspect_ratio"] = "9:16"
-    else:
-        params.update({"aspect_ratio": "auto", "resolution": "720p", "duration": "12"})
+    params: dict = {
+        "aspect_ratio": "9:16",
+        "resolution": "720p",
+        "duration": "12",
+    }
+    # Only include image_urls if approved frame URLs exist and model is reference-based
+    if frame_urls and "omni" not in model:
+        params["image_urls"] = frame_urls
 
     result = await generate_and_wait(
         session,
@@ -43,6 +46,7 @@ async def _try_model(session: aiohttp.ClientSession, model: str, omni_prompt: st
         "prompt_used": omni_prompt[:200] + "...",
         "model_used": model,
     }
+
 
 
 async def assemble_video(state: AgentState) -> AgentState:

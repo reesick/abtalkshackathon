@@ -36,6 +36,8 @@ async def lifespan(app: FastAPI):
     # APScheduler and aiohttp sessions stop with the process
 
 
+BASE_DIR = Path(__file__).resolve().parent
+
 app = FastAPI(
     title="ABTalks Autonomous Agent",
     version="1.0.0",
@@ -52,4 +54,5 @@ async def health():
 
 @app.get("/")
 async def index():
-    return FileResponse("feed.html")
+    return FileResponse(BASE_DIR / "feed.html")
+

@@ -1,6 +1,6 @@
 # Media Pipeline Dry Run
 
-Generated: 2026-08-09T06:48:12.375959+00:00
+Generated: 2026-08-09T13:46:25.177277+00:00
 
 Persona: Kabir Rao (ML engineering) — see ml_engineer_persona.md, the canonical spec this pipeline implements. Scope: text + single static image per post only (video/TTS out of scope, disconnected from the graph — see agent/graph.py header comment).
 
@@ -10,7 +10,7 @@ This run executes discover_topics -> filter_seen -> editorial_judge -> decide_fo
 
 Input: persona=Kabir Rao (ML engineering)
 
-Output: 27 candidates found
+Output: 145 candidates found
 
 ```json
 [
@@ -18,97 +18,157 @@ Output: 27 candidates found
     "title": "Responding to the next frontier of critical cyber capabilities",
     "url": "https://openai.com/index/responding-next-frontier-critical-cyber-capabilities",
     "source": "rss",
+    "source_type": "article",
+    "source_class": "independent",
     "summary": "OpenAI is sharing preliminary cybersecurity evaluations for Astra and the steps we\u2019re taking to strengthen safeguards and security controls.",
     "published_at": "Fri, 07 Aug 2026 15:20:00 GMT",
-    "fingerprint": "833934ee3b25f4a5"
+    "fingerprint": "833934ee3b25f4a5",
+    "metadata": {
+      "feed_url": "https://openai.com/news/rss.xml",
+      "feed_domain": "openai.com"
+    }
   },
   {
     "title": "How HSP GRUPPE builds AI capabilities for tax advisory",
     "url": "https://openai.com/index/hsp-gruppe",
     "source": "rss",
+    "source_type": "article",
+    "source_class": "independent",
     "summary": "Discover how HSP GRUPPE uses ChatGPT Enterprise to boost productivity, improve work quality, and create more capacity for tax advisory and client service.",
     "published_at": "Fri, 07 Aug 2026 09:00:00 GMT",
-    "fingerprint": "2ee94000fec4618b"
+    "fingerprint": "2ee94000fec4618b",
+    "metadata": {
+      "feed_url": "https://openai.com/news/rss.xml",
+      "feed_domain": "openai.com"
+    }
   },
   {
     "title": "Improving GPT\u20115.6 Sol in ChatGPT\u2014and expanding access to GPT-5.6 Luna for free users",
     "url": "https://openai.com/index/improving-gpt-5-6-sol-in-chatgpt",
     "source": "rss",
+    "source_type": "article",
+    "source_class": "independent",
     "summary": "ChatGPT introduces improved GPT-5.6 Sol with better accuracy and consistency, plus expanded access for free users and unlimited everyday chats with GPT-5.6 Luna.",
     "published_at": "Thu, 06 Aug 2026 10:00:00 GMT",
-    "fingerprint": "0f0c1961f93e8e0c"
+    "fingerprint": "0f0c1961f93e8e0c",
+    "metadata": {
+      "feed_url": "https://openai.com/news/rss.xml",
+      "feed_domain": "openai.com"
+    }
   },
   {
     "title": "Working with the American Psychological Association on youth mental health and AI",
     "url": "https://openai.com/index/openai-and-apa-partner-to-advance-responsible-ai",
     "source": "rss",
+    "source_type": "article",
+    "source_class": "independent",
     "summary": "OpenAI and the American Psychological Association advance evidence-based guidance, resources, and safeguards for responsible AI use and youth mental health.",
     "published_at": "Thu, 06 Aug 2026 06:00:00 GMT",
-    "fingerprint": "6da5f2d271da214d"
+    "fingerprint": "6da5f2d271da214d",
+    "metadata": {
+      "feed_url": "https://openai.com/news/rss.xml",
+      "feed_domain": "openai.com"
+    }
   },
   {
     "title": "From asking to doing: How the world is putting ChatGPT to work",
     "url": "https://openai.com/index/how-the-world-is-putting-chatgpt-to-work",
     "source": "rss",
+    "source_type": "article",
+    "source_class": "independent",
     "summary": "New OpenAI Signals data shows how people use ChatGPT worldwide, with country-level insights on adoption, usage trends, and evolving behavior.",
     "published_at": "Thu, 06 Aug 2026 00:00:00 GMT",
-    "fingerprint": "fea9ae47ebf2b0f0"
+    "fingerprint": "fea9ae47ebf2b0f0",
+    "metadata": {
+      "feed_url": "https://openai.com/news/rss.xml",
+      "feed_domain": "openai.com"
+    }
   },
   {
-    "title": "The latest AI news we announced in July 2026",
-    "url": "https://blog.google/innovation-and-ai/technology/ai/google-ai-updates-july-2026/",
+    "title": "Improving Fable 5's biology safeguards",
+    "url": "https://www.anthropic.com/news/improving-fable-5-s-biology-safeguards",
     "source": "rss",
-    "summary": "July AI recap header",
-    "published_at": "Tue, 04 Aug 2026 13:00:00 +0000",
-    "fingerprint": "2a0a276054536ae6"
+    "source_type": "article",
+    "source_class": "independent",
+    "summary": "Improving Fable 5's biology safeguards",
+    "published_at": "Fri, 07 Aug 2026 00:00:00 +0000",
+    "fingerprint": "7fee6508a588d342",
+    "metadata": {
+      "feed_url": "https://raw.githubusercontent.com/Olshansk/rss-feeds/main/feeds/feed_anthropic_news.xml",
+      "feed_domain": "raw.githubusercontent.com"
+    }
   },
   {
-    "title": "Inside our 353,000-person vibe coding course",
-    "url": "https://blog.google/innovation-and-ai/technology/developers-tools/ai-agents-intensive-recap-2026/",
+    "title": "Mariano-Florentino (Tino) Cu\u00e9llar to join Anthropic as Chief Global Affairs Officer",
+    "url": "https://www.anthropic.com/news/tino-cuellar",
     "source": "rss",
-    "summary": "Illustrations of a laptop, an AI spark, messages, code, and a 3-D cube",
-    "published_at": "Mon, 03 Aug 2026 15:00:00 +0000",
-    "fingerprint": "928c08785b292a8e"
+    "source_type": "article",
+    "source_class": "independent",
+    "summary": "Mariano-Florentino (Tino) Cu\u00e9llar to join Anthropic as Chief Global Affairs Officer",
+    "published_at": "Tue, 04 Aug 2026 00:00:00 +0000",
+    "fingerprint": "3cd0cbb150ad34c8",
+    "metadata": {
+      "feed_url": "https://raw.githubusercontent.com/Olshansk/rss-feeds/main/feeds/feed_anthropic_news.xml",
+      "feed_domain": "raw.githubusercontent.com"
+    }
   },
   {
-    "title": "Gemini API Managed Agents: 3.6 Flash, hooks, and more",
-    "url": "https://blog.google/innovation-and-ai/technology/developers-tools/expanding-managed-agents-gemini-api-3-6-flash-hooks/",
+    "title": "Investigating three real-world incidents in our cybersecurity evaluations",
+    "url": "https://www.anthropic.com/news/investigating-incidents-cybersecurity-evals",
     "source": "rss",
-    "summary": "Managed Agents Gemini 3.6 Flash, Hooks and Triggers",
-    "published_at": "Tue, 28 Jul 2026 16:00:00 +0000",
-    "fingerprint": "be3ca53745f60ae7"
+    "source_type": "article",
+    "source_class": "independent",
+    "summary": "Investigating three real-world incidents in our cybersecurity evaluations",
+    "published_at": "Thu, 30 Jul 2026 00:00:00 +0000",
+    "fingerprint": "d382e1dba0c73c1f",
+    "metadata": {
+      "feed_url": "https://raw.githubusercontent.com/Olshansk/rss-feeds/main/feeds/feed_anthropic_news.xml",
+      "feed_domain": "raw.githubusercontent.com"
+    }
   },
   {
-    "title": "5 ways AI Mode in Search helps you enjoy the real world",
-    "url": "https://blog.google/products-and-platforms/products/search/ai-mode-real-world-tips/",
+    "title": "Cognizant and Anthropic expand their partnership to bring Claude to enterprise clients",
+    "url": "https://www.anthropic.com/news/cognizant-anthropic",
     "source": "rss",
-    "summary": "Illustration of a black magnifying glass in a white circle on green grass surrounded by items related to fun activities like tennis and games",
-    "published_at": "Tue, 28 Jul 2026 13:00:00 +0000",
-    "fingerprint": "7c8ae2784e8b94a1"
+    "source_type": "article",
+    "source_class": "independent",
+    "summary": "Cognizant and Anthropic expand their partnership to bring Claude to enterprise clients",
+    "published_at": "Mon, 27 Jul 2026 00:00:00 +0000",
+    "fingerprint": "be0b73b30b53df2d",
+    "metadata": {
+      "feed_url": "https://raw.githubusercontent.com/Olshansk/rss-feeds/main/feeds/feed_anthropic_news.xml",
+      "feed_domain": "raw.githubusercontent.com"
+    }
   },
   {
-    "title": "5 ways to host the ultimate dinner party with Google Search",
-    "url": "https://blog.google/products-and-platforms/products/search/dinner-party-hosting-tips/",
+    "title": "Our position on open-weights models",
+    "url": "https://www.anthropic.com/news/position-open-weights-models",
     "source": "rss",
-    "summary": "An illustrated black magnifying glass with a sparkle in a white circle surrounded by a dinner party tablescape",
-    "published_at": "Tue, 28 Jul 2026 13:00:00 +0000",
-    "fingerprint": "61b149676fcbb913"
+    "source_type": "article",
+    "source_class": "independent",
+    "summary": "Our position on open-weights models",
+    "published_at": "Mon, 27 Jul 2026 00:00:00 +0000",
+    "fingerprint": "80d8760fd0f40ab2",
+    "metadata": {
+      "feed_url": "https://raw.githubusercontent.com/Olshansk/rss-feeds/main/feeds/feed_anthropic_news.xml",
+      "feed_domain": "raw.githubusercontent.com"
+    }
   }
 ]
 ```
 
-(showing first 10 of 27)
+(showing first 10 of 145)
 
 ## Step 2 — filter_seen
 
-Input: 27 candidates
+Input: 145 candidates
 
-Output: 27 candidates passed filter (Breeth search_graph dedup — see HOW_IT_ACTUALLY_WORKS.md for known issues)
+Output: 145 candidates passed filter (Breeth search_graph dedup — see HOW_IT_ACTUALLY_WORKS.md for known issues)
 
 
 ## Step 3 — editorial_judge
 
-Input: 27 candidates
+Input: 145 candidates
 
 Output — selected_topic:
 ```json
@@ -116,13 +176,19 @@ Output — selected_topic:
   "title": "Responding to the next frontier of critical cyber capabilities",
   "url": "https://openai.com/index/responding-next-frontier-critical-cyber-capabilities",
   "source": "rss",
+  "source_type": "article",
+  "source_class": "independent",
   "summary": "OpenAI is sharing preliminary cybersecurity evaluations for Astra and the steps we\u2019re taking to strengthen safeguards and security controls.",
   "published_at": "Fri, 07 Aug 2026 15:20:00 GMT",
-  "fingerprint": "833934ee3b25f4a5"
+  "fingerprint": "833934ee3b25f4a5",
+  "metadata": {
+    "feed_url": "https://openai.com/news/rss.xml",
+    "feed_domain": "openai.com"
+  }
 }
 ```
 
-Rejected count: 26
+Rejected count: 144
 
 Sample rejected (first 3):
 ```json
@@ -131,28 +197,46 @@ Sample rejected (first 3):
     "title": "How HSP GRUPPE builds AI capabilities for tax advisory",
     "url": "https://openai.com/index/hsp-gruppe",
     "source": "rss",
+    "source_type": "article",
+    "source_class": "independent",
     "summary": "Discover how HSP GRUPPE uses ChatGPT Enterprise to boost productivity, improve work quality, and create more capacity for tax advisory and client service.",
     "published_at": "Fri, 07 Aug 2026 09:00:00 GMT",
     "fingerprint": "2ee94000fec4618b",
-    "judge_reason": "Relevant to persona's interests (ML engineering, AI applications), but no clear stance or novelty."
+    "metadata": {
+      "feed_url": "https://openai.com/news/rss.xml",
+      "feed_domain": "openai.com"
+    },
+    "judge_reason": "parse_fallback"
   },
   {
     "title": "Improving GPT\u20115.6 Sol in ChatGPT\u2014and expanding access to GPT-5.6 Luna for free users",
     "url": "https://openai.com/index/improving-gpt-5-6-sol-in-chatgpt",
     "source": "rss",
+    "source_type": "article",
+    "source_class": "independent",
     "summary": "ChatGPT introduces improved GPT-5.6 Sol with better accuracy and consistency, plus expanded access for free users and unlimited everyday chats with GPT-5.6 Luna.",
     "published_at": "Thu, 06 Aug 2026 10:00:00 GMT",
     "fingerprint": "0f0c1961f93e8e0c",
-    "judge_reason": "Routine product update with no clear mechanism or novelty."
+    "metadata": {
+      "feed_url": "https://openai.com/news/rss.xml",
+      "feed_domain": "openai.com"
+    },
+    "judge_reason": "parse_fallback"
   },
   {
     "title": "Working with the American Psychological Association on youth mental health and AI",
     "url": "https://openai.com/index/openai-and-apa-partner-to-advance-responsible-ai",
     "source": "rss",
+    "source_type": "article",
+    "source_class": "independent",
     "summary": "OpenAI and the American Psychological Association advance evidence-based guidance, resources, and safeguards for responsible AI use and youth mental health.",
     "published_at": "Thu, 06 Aug 2026 06:00:00 GMT",
     "fingerprint": "6da5f2d271da214d",
-    "judge_reason": "Relevant to persona's interests (ML engineering, AI ethics), timely, and a clear stance can be taken on responsible AI use."
+    "metadata": {
+      "feed_url": "https://openai.com/news/rss.xml",
+      "feed_domain": "openai.com"
+    },
+    "judge_reason": "parse_fallback"
   }
 ]
 ```
@@ -173,14 +257,19 @@ Input: content_type=text_post
 
 Output — post_text (real LLM call, Kabir Rao voice, sanitized for banned patterns per ml_engineer_persona.md section 5):
 
-OpenAI shares cybersecurity evaluations for Astra, but what about the real-world tests it failed?
+Draft 2:
 
-I've seen the OpenAI team's preliminary cybersecurity assessments for Astra, their new model. They're addressing identified vulnerabilities and bolstering safeguards. But what about the unscripted, real-world tests that can make or break a system?
-Once, during a project, I assumed a model's security was solid, only to learn it wasn't when it was put to the test in production. Astra's case reminds me of that experience.
-This isn't about blame or fear-mongering, but a call for transparency and a balanced perspective on model security.
-We need to focus on rigorous, realistic testing beyond lab conditions and acknowledge that security is an iterative process, not a one-time event.
-Astra's cybersecurity evaluations are a step forward, but it's critical to recognize that these assessments alone don't guarantee robust protection.
-As engineers, let's commit to continuous improvement, testing, and transparency in model security. It's the only way to truly safeguard against cyber threats.
+Cybersecurity safeguards, they can fight with your model also. Happened to me once.
+
+I made a model, had a critical bug in it. Model was too confident in itself. But when I tried to deploy it, I put it through one last test set.
+
+You know how it is in production. Test set is different there. It's always outside your local test cases. So I put it through a real-world data set.
+
+This is called "adversarial testing". You test your model by challenging it. As soon as you start challenging your model, you need to keep an eye on it. If you're not confident in your model during testing, you won't be confident in it in production either.
+
+Production test set is different. You need to test your model in real-world scenarios. Adversarial testing is common. You need to challenge your model. Cybersecurity safeguards can fight with your model, but you have to be ahead of it.
+
+If you're not confident in testing your model in real-world scenarios, you're behind. You need to do adversarial testing.
 
 Source: https://openai.com/index/responding-next-frontier-critical-cyber-capabilities
 
@@ -190,11 +279,12 @@ Output — rationale (section 8 template: selected_because / relevant_now_becaus
 
 ```json
 {
-  "selected_because": "Responding to the next frontier of critical cyber capabilities",
-  "relevant_now_because": "Selected by editorial judge",
-  "rejected_alternatives": "26 topics filtered",
-  "format_rationale": "text_post",
+  "selected_because": "OpenAI's transparency about their cybersecurity evaluations for Astra aligns with my interest in agent reliability and the gap between demo-quality and production-quality AI. The specific detail of them sharing preliminary evaluations and steps to strengthen safeguards is what makes it worth a post.",
+  "relevant_now_because": "Given the increasing importance of cybersecurity in AI applications, this is a timely and relevant topic to discuss.",
+  "rejected_alternatives": "The HSP GRUPPE AI capabilities post lacked specific details about their approach, making it hard to evaluate or compare. The GPT-5.6 Sol improvement post was interesting but didn't connect to any of my stable interests.",
+  "format_rationale": "The nature of the summary and the availability of specific details made a text_post the best format for this topic.",
   "sources": [
+    "rss",
     "https://openai.com/index/responding-next-frontier-critical-cyber-capabilities"
   ]
 }

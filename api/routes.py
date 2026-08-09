@@ -209,8 +209,9 @@ async def _get_feed_for_agent(agentId: str, limit: int, cursor: Optional[int]) -
                 topic_url=r.topic_url,
                 rationale=json.loads(r.rationale) if r.rationale else None,
                 sources=json.loads(r.sources) if r.sources else None,
-                meme_judge=json.loads(r.meme_judge_json) if r.meme_judge_json else None,
+                meme_judge=json.loads(getattr(r, "meme_judge_json", None)) if getattr(r, "meme_judge_json", None) else None,
                 created_at=r.created_at,
+
             )
             for r in rows
         ]

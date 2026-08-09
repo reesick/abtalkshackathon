@@ -269,6 +269,17 @@
     color: var(--charcoal);
   }
 
+  .content-type-badge.video_post {
+    background: #ffebee;
+    color: #c62828;
+  }
+
+  .content-type-badge.image_post {
+    background: #e3f2fd;
+    color: #1565c0;
+  }
+
+
   .post-body { padding: 0 var(--sp-lg) var(--sp-lg); }
 
   .post-lang-toggle {
@@ -637,11 +648,19 @@
     const textHi = post.text_hi || post.text || '';
     const hasBothLangs = !!(post.text_en && post.text_hi && post.text_en !== post.text_hi);
 
-    const badgeLabel = post.content_type === 'meme_post' ? 'Meme' : 'Text';
+    const badgeLabel = post.content_type === 'meme_post' ? 'Meme' : (post.content_type === 'video_post' ? 'Video' : (post.content_type === 'image_post' ? 'Image' : 'Text'));
 
-    const mediaHtml = post.media_url
-      ? `<img class="post-media" src="${post.media_url}" alt="${escapeHtml(post.topic_title || '')}" loading="lazy" />`
-      : '';
+
+    let mediaHtml = '';
+    if (post.media_url) {
+      const isVideo = post.media_type === 'video' || (post.media_url && post.media_url.includes('.mp4'));
+      if (isVideo) {
+        mediaHtml = `<video class="post-media" controls loop muted playsinline src="${post.media_url}"></video>`;
+      } else {
+        mediaHtml = `<img class="post-media" src="${post.media_url}" alt="${escapeHtml(post.topic_title || '')}" loading="lazy" />`;
+      }
+    }
+
 
     // Topic headline block: bold title (the story the post is about) with
     // the source domain as a small clickable label beneath it — kept

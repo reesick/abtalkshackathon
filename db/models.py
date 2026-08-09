@@ -150,6 +150,21 @@ class MemeUsage(Base):
 
 def create_tables() -> None:
     Base.metadata.create_all(bind=engine)
+    # Lightweight SQLite schema migration for newly added columns
+    try:
+        with engine.connect() as conn:
+            from sqlalchemy import text
+            columns = [row[1] for row in conn.execute(text("PRAGMA table_info(posts)")).fetchall()]
+            if "text_en" not in columns:
+                conn.execute(text("ALTER TABLE posts ADD COLUMN text_en TEXT"))
+            if "text_hi" not in columns:
+                conn.execute(text("ALTER TABLE posts ADD COLUMN text_hi TEXT"))
+            if "meme_judge_json" not in columns:
+                conn.execute(text("ALTER TABLE posts ADD COLUMN meme_judge_json TEXT"))
+            conn.commit()
+    except Exception:
+        pass
+
 
 
 @contextmanager
