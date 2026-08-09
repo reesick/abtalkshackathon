@@ -37,7 +37,9 @@ class AgentState(TypedDict):
     selected_topic: Optional[dict]    # one candidate after editorial_judge
 
     # --- routing ---
-    content_type: Literal["image_post", "video_post", "text_post"]
+    # video_post removed: out of scope for this persona version
+    # (ml_engineer_persona.md section 6, text + single static image only)
+    content_type: Literal["image_post", "text_post"]
 
     # --- generation ---
     script: Optional[dict]            # {hook, beats[], narration, retention_notes}

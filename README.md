@@ -1,6 +1,8 @@
 # ABTalks Autonomous Agent
 
-Scheduler-driven content pipeline: discovers AI/tech topics → judges them against a persona → generates video/image/text posts via Flora MCP (nano banana 2 + Google Omni) → persists to DB + Breeth memory. Runs autonomously for 48h with no per-request generation.
+Scheduler-driven content pipeline: discovers AI/ML engineering topics → judges them against a persona → generates image/text posts via Flora (nano banana 2 for a single supporting image) → persists to DB + Breeth memory. Runs autonomously for 48h with no per-request generation.
+
+Persona voice, structure, and editorial rules are defined in [`ml_engineer_persona.md`](./ml_engineer_persona.md) — that file is the canonical spec; `agent/prompts/persona.py` and the judge/rationale nodes implement it. Video and TTS are explicitly out of scope for this version (see persona spec section 6) — the code for both still exists (`agent/nodes/video.py`, `agent/nodes/generate_tts.py`, `agent/nodes/omni_prompt.py`) but is disconnected from the graph, left as a clean seam for later.
 
 ---
 
@@ -18,24 +20,37 @@ First, check what tool names your MCP servers actually expose:
 python check_tools.py
 ```
 
-Then seed an agent (first tick fires in ~5 seconds):
+Then seed an agent (first tick fires in ~5 seconds). Example uses Kabir Rao,
+the reference persona from `ml_engineer_persona.md`:
 
 ```bash
 curl -s -X POST http://localhost:8000/api/agent/init \
   -H "Content-Type: application/json" \
   -d '{
-    "persona_name": "Ada Shen",
-    "persona_domain": "ML infrastructure",
-    "voice_rules": "terse, technically skeptical, avoids hype",
+    "persona_name": "Kabir Rao",
+    "persona_domain": "ML engineering",
+    "voice_rules": "terse, story-first, earns the opinion by showing the scar first, no hype",
     "recurring_opinions": [
-      "skeptical of benchmark-only claims",
-      "pro open-weights"
+      "most published benchmarks are marketing, not science",
+      "a team that cannot explain its eval methodology in one sentence does not have one",
+      "agents are not products, reliability is the product",
+      "data cleaning is more valuable than model architecture for 90% of teams",
+      "most AI failures are specification failures, not model failures",
+      "cost is a feature, if you cannot say what a query costs you, you do not understand your product"
     ],
     "stable_interests": [
-      "inference efficiency", "model serving", "open source tooling"
+      "model evaluation and why most evals lie",
+      "GPU and inference cost economics",
+      "RAG systems and why they break in the real world",
+      "the gap between demo-quality and production-quality AI",
+      "hiring signal in ML roles",
+      "agent hype vs agent reality",
+      "data quality as the unsexy bottleneck",
+      "open source vs closed lab dynamics"
     ],
     "pushback": [
-      "hype-only announcements", "closed-source-only research"
+      "hype-only announcements with no technical substance",
+      "unverified benchmark claims", "leaderboard-only wins"
     ]
   }'
 ```
@@ -71,11 +86,10 @@ Scheduler (150-240 min jitter)
         ├── discover_topics   RSS + HN Algolia + Reddit .json
         ├── filter_seen       Breeth near-duplicate filter
         ├── editorial_judge   LLM scoring, logs all rejections
-        ├── decide_format     deterministic router → video/image/text
-        ├── write_script      LLM → hook/beats/narration
-        ├── generate_assets   Flora: nano banana 2 (one frame per beat)
-        ├── assemble_video    Flora: Google Omni (frames + VO → mp4)
-        ├── write_post        LLM caption in persona voice
+        ├── decide_format     deterministic router → image/text
+        ├── write_script      LLM → single visual idea (image_post only)
+        ├── generate_assets   Flora: nano banana 2 (one image per post)
+        ├── write_post        LLM post in persona voice (hook/turn/contrast/closer)
         ├── generate_rationale structured editorial rationale
         └── persist           DB write + Breeth fingerprint + persona doc delta
 ```
@@ -86,8 +100,7 @@ Scheduler (150-240 min jitter)
 
 | Failure | Fallback |
 |---|---|
-| `assemble_video` timeout / error | `content_type → image_post` (first frame as media) |
-| `generate_assets` all frames fail | `content_type → text_post` (no feed gap) |
+| `generate_assets` fails | `content_type → text_post` (no feed gap) |
 | Breeth unavailable | pass-through (filter + memory skip silently) |
 | No candidates after filter | clean exit, `tick_log` row: `published=False` |
 
@@ -129,14 +142,21 @@ abtalks/
 │   └── nodes/
 │       ├── discover.py          RSS + HN + Reddit
 │       ├── filter.py            Breeth dedup filter
-│       ├── judge.py             Editorial scoring
-│       ├── format.py            Deterministic format router
-│       ├── script.py            Video script writer
-│       ├── assets.py            Flora → nano banana 2
-│       ├── video.py             Flora → Google Omni
-│       ├── post.py              Caption writer
-│       ├── rationale.py         Editorial rationale
-│       └── persist.py           DB + Breeth memory
+│       ├── judge.py             Editorial scoring (accept/reject rules)
+│       ├── format.py            Deterministic format router (image_post / text_post)
+│       ├── script.py            Single-image visual idea writer
+│       ├── plan_assets.py       Converts visual idea into a structured asset plan
+│       ├── assets.py            Flora → nano banana 2 (one image per post)
+│       ├── validate_assets.py   Heuristic asset validation
+│       ├── post.py              Post writer (hook/turn/contrast-line/closer structure)
+│       ├── rationale.py         Editorial rationale (selected_because/relevant_now_because/...)
+│       ├── persist.py           DB + Breeth memory
+│       │
+│       │   -- disconnected from the graph, out of scope per persona spec
+│       │      section 6, kept as a clean seam for later --
+│       ├── generate_tts.py      ElevenLabs TTS (not wired in)
+│       ├── omni_prompt.py       Video prompt builder (not wired in)
+│       └── video.py             Flora video assembly (not wired in)
 ├── api/
 │   └── routes.py                /init and /feed endpoints
 └── db/

@@ -21,8 +21,10 @@ logger = logging.getLogger(__name__)
 
 
 def _media_url(state: AgentState) -> tuple[str | None, str | None]:
-    if state.get("video_asset") and state["video_asset"].get("url"):
-        return state["video_asset"]["url"], "video"
+    """
+    Video is out of scope for this persona version (ml_engineer_persona.md
+    section 6) — only a single static image per post, or no media at all.
+    """
     if state.get("image_assets"):
         first = next((a for a in state["image_assets"] if a.get("url")), None)
         if first:
@@ -43,7 +45,7 @@ async def _push_breeth_memory(state: AgentState) -> None:
     persona_name = persona.get("name", "the_persona")
     topic_title = topic.get("title", "")
     topic_url = topic.get("url", "")
-    stance = (state.get("rationale") or {}).get("why_selected", "")[:200]
+    stance = (state.get("rationale") or {}).get("selected_because", "")[:200]
     content_type = state["content_type"]
 
     # 1. add_episode — full episode text for semantic recall

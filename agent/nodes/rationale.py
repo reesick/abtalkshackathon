@@ -9,9 +9,11 @@ from agent.state import AgentState
 _llm = get_llm(model_id=MODEL_FAST, temperature=0.2, max_tokens=1024)
 
 _SYSTEM = """\
-You are generating an editorial rationale log for an autonomous AI publishing agent.
-This is an internal transparency record — not public copy.
-Be precise and honest. If a selection was a close call, say so.
+You are generating an editorial rationale log for an autonomous AI publishing
+agent (persona: an ML engineer voice). This is an internal transparency
+record — not public copy. Be precise and honest, and sound like the
+persona's actual reasoning, not a generic log line. If a selection was a
+close call, say so.
 """
 
 _HUMAN = """\
@@ -27,11 +29,11 @@ Post type chosen: {content_type}
 
 Return a JSON object with this exact shape:
 {{
-  "why_selected": "<2-3 sentences: what made this topic the right pick now>",
-  "why_now": "<1-2 sentences: timeliness or recency angle>",
+  "selected_because": "<why this topic fits the persona's stable interests / why it's editorially strong, and what concrete mechanism/story/number it hangs on>",
+  "relevant_now_because": "<what makes this timely: a release, a controversy, a pattern noticed>",
+  "rejected_alternatives": "<1-2 other topics considered and why they didn't make the cut, when applicable>",
   "format_rationale": "<1 sentence: why this content_type fits the topic>",
-  "sources": ["{selected_source}"],
-  "rejected_summary": "<1 sentence summarising the pattern of rejections>"
+  "sources": ["{selected_source}"]
 }}
 """
 
@@ -71,11 +73,11 @@ async def generate_rationale(state: AgentState) -> AgentState:
         rationale = json.loads(raw.strip())
     except Exception:
         rationale = {
-            "why_selected": topic.get("title", ""),
-            "why_now": "Selected by editorial judge",
+            "selected_because": topic.get("title", ""),
+            "relevant_now_because": "Selected by editorial judge",
+            "rejected_alternatives": f"{len(rejected)} topics filtered",
             "format_rationale": state["content_type"],
             "sources": [topic.get("url", "")],
-            "rejected_summary": f"{len(rejected)} topics filtered",
         }
 
     # Ensure the source URL is always present

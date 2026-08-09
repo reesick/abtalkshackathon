@@ -1,5 +1,11 @@
-"""write_post node — generates caption/post text in persona voice."""
+"""
+write_post node — generates the post text in Kabir Rao's voice.
+
+Scope (ml_engineer_persona.md section 6): text + single static image per
+post only. No video path anymore.
+"""
 import logging
+import re
 
 from langchain_core.messages import HumanMessage, SystemMessage
 
@@ -9,53 +15,62 @@ from agent.nodes.script import build_persona_prompt
 
 logger = logging.getLogger(__name__)
 
-_llm = get_llm(model_id=MODEL_FAST, temperature=0.8, max_tokens=512)
+_llm = get_llm(model_id=MODEL_FAST, temperature=0.8, max_tokens=768)
+
+# Mistral-7B does not reliably follow "don't print section labels" or
+# "no em dashes" as prompt-only instructions (observed repeatedly — same
+# class of limitation as the narration word-count enforcement in the old
+# script.py). Code-level cleanup catches what the prompt alone doesn't,
+# rather than silently accepting output that violates section 5's banned
+# patterns.
+_SECTION_LABEL_RE = re.compile(
+    r"^\s*(hook|the turn|turn|insight stack|contrast line|closer|"
+    r"anecdote|parenthetical)\s*:\s*",
+    re.IGNORECASE | re.MULTILINE,
+)
+
+
+def _sanitize(text: str) -> str:
+    # Strip leaked structural labels like "Hook:", "The Turn:", etc.
+    text = _SECTION_LABEL_RE.sub("", text)
+    # Em dashes are banned outright — replace with a comma or period
+    # depending on surrounding spacing, defaulting to a comma.
+    text = text.replace(" — ", ", ").replace("—", ", ")
+    # Collapse any resulting double spaces/blank-line artifacts
+    text = re.sub(r"[ \t]{2,}", " ", text)
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    return text.strip()
+
 
 _IMAGE_INSTRUCTION = """\
-Write the caption for an image post about:
-Title: {title}
-Summary: {summary}
-
-The image(s) illustrate: {visual_ideas}
-
-Rules:
-- Lead sentence ≤ 50 words, carries the argument
-- The image illustrates; the caption does not duplicate it
-- One clear stance, not a summary
-- No hashtags unless they are genuinely indexing terms
-"""
-
-_VIDEO_INSTRUCTION = """\
-Write the caption that accompanies this short (10-12 second) hook/teaser video:
+Write an image post about:
 Title: {title}
 Source: {source_url}
-Video hook: {hook}
-Full topic summary: {summary}
+Summary: {summary}
 
-The video only delivers a hook line and one stance — it does not explain the
-full story. This caption is where the rest of the substance lives: the
-context the video didn't have time for, why it matters, and the source link.
+The attached image depicts: {visual_idea}
 
-Rules:
-- Do not repeat the video's hook line verbatim
-- Give the reader the context/detail the video skipped — what actually
-  happened, why it matters, any concrete numbers or specifics from the summary
-- End with the source link on its own line
-- One clear stance, consistent with the video's stance — not a contradiction
-- No hashtags unless they are genuinely indexing terms
-- No "swipe up", "link in bio", or engagement-bait phrasing
+Follow the REQUIRED STRUCTURE from your system prompt in full: hook, optional
+parenthetical, anecdote, the turn (named concept/analogy/sourced stat), insight
+stack, contrast line, closer. The image supports the point; the caption still
+carries the entire argument on its own. Write it as continuous prose — do not
+print any section labels, and do not open with a question.
+
+End with the source link on its own line.
 """
 
 _TEXT_INSTRUCTION = """\
 Write a standalone text post about:
 Title: {title}
+Source: {source_url}
 Summary: {summary}
 
-Rules:
-- Lead sentence ≤ 280 characters — the entire argument in one breath
-- If you continue, use whitespace; no wall of text
-- No thread openers ("thread 🧵", "let's dive in", numbered lists as openers)
-- One clear stance
+Follow the REQUIRED STRUCTURE from your system prompt, compressed for a
+shorter post — but the hook and the contrast line are non-negotiable even
+here. Use whitespace deliberately. Write it as continuous prose, with no
+visible section labels and no question as the opening line.
+
+End with the source link on its own line.
 """
 
 
@@ -65,35 +80,27 @@ async def write_post(state: AgentState) -> AgentState:
     script = state.get("script") or {}
     image_assets = state.get("image_assets") or []
 
-    visual_ideas = ", ".join(
-        a.get("prompt_used", "")[:80] for a in image_assets[:3]
-    )
+    beats = script.get("beats") or []
+    visual_idea = beats[0].get("visual_idea", "") if beats else ""
 
     asset_context = ""
     if image_assets:
-        asset_context = f"You have {len(image_assets)} frame image(s) attached. Reference them as commissioned visuals."
-    if state.get("video_asset"):
-        asset_context = "You have a short video attached. Write a caption that complements it."
+        asset_context = "You have one supporting static image attached. Reference it only if it genuinely helps the point — do not describe it in detail."
 
     system_prompt = build_persona_prompt(state, asset_context=asset_context)
 
     if content_type == "image_post":
         human_msg = _IMAGE_INSTRUCTION.format(
             title=topic.get("title", ""),
-            summary=topic.get("summary", "")[:400],
-            visual_ideas=visual_ideas or "abstract tech imagery",
-        )
-    elif content_type == "video_post":
-        human_msg = _VIDEO_INSTRUCTION.format(
-            title=topic.get("title", ""),
             source_url=topic.get("url", ""),
-            hook=script.get("hook", ""),
             summary=topic.get("summary", "")[:500],
+            visual_idea=visual_idea or "an abstract illustration of the topic",
         )
     else:
         human_msg = _TEXT_INSTRUCTION.format(
             title=topic.get("title", ""),
-            summary=topic.get("summary", "")[:400],
+            source_url=topic.get("url", ""),
+            summary=topic.get("summary", "")[:500],
         )
 
     response = await _llm.ainvoke([
@@ -101,4 +108,6 @@ async def write_post(state: AgentState) -> AgentState:
         HumanMessage(content=human_msg),
     ])
 
-    return {**state, "post_text": response.content.strip()}
+    post_text = _sanitize(response.content.strip())
+
+    return {**state, "post_text": post_text}

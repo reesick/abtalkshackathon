@@ -1,17 +1,20 @@
 """
 LangGraph StateGraph wiring.
 
+Scope (ml_engineer_persona.md section 6): text + single static image per
+post only. Video and TTS are explicitly out of scope for this version —
+agent/nodes/generate_tts.py, agent/nodes/omni_prompt.py, and
+agent/nodes/video.py are left on disk as a clean seam for later, but are
+NOT wired into this graph. Do not invoke them from here.
+
 Graph shape:
   discover → filter → judge → [no topic: END] → format
-    → [video] → write_script → plan_media_assets → generate_assets → validate_assets
-                    → generate_tts → build_omni_prompt → assemble_video → write_post
     → [image] → write_script → plan_media_assets → generate_assets → validate_assets ──→ write_post
     → [text] ────────────────────────────────────────────────────────────────────────→ write_post
   → generate_rationale → persist → END
 """
 import logging
 import uuid
-from datetime import datetime, timezone
 from typing import Literal
 
 from langgraph.graph import END, START, StateGraph
@@ -20,16 +23,13 @@ from agent.nodes.assets import generate_assets
 from agent.nodes.discover import discover_topics
 from agent.nodes.filter import filter_seen
 from agent.nodes.format import decide_format
-from agent.nodes.generate_tts import generate_tts
 from agent.nodes.judge import editorial_judge
-from agent.nodes.omni_prompt import build_omni_prompt
 from agent.nodes.persist import persist
 from agent.nodes.plan_assets import plan_media_assets
 from agent.nodes.post import write_post
 from agent.nodes.rationale import generate_rationale
 from agent.nodes.script import write_script
 from agent.nodes.validate_assets import validate_assets
-from agent.nodes.video import assemble_video
 from agent.state import AgentState
 
 logger = logging.getLogger(__name__)
@@ -47,27 +47,10 @@ def _after_judge(state: AgentState) -> Literal["decide_format", "end"]:
 
 
 def _after_format(state: AgentState) -> Literal["write_script", "write_post"]:
-    """Text posts skip the script/asset/video nodes entirely."""
+    """Text posts skip the script/asset nodes entirely."""
     if state["content_type"] == "text_post":
         return "write_post"
     return "write_script"
-
-
-def _after_validate(state: AgentState) -> Literal["generate_tts", "write_post"]:
-    """
-    If validation degraded to text_post, skip TTS/video entirely.
-    Image posts skip TTS/video (no narration needed for a static image post).
-    """
-    if state["content_type"] in ("text_post", "image_post"):
-        return "write_post"
-    return "generate_tts"
-
-
-def _after_omni_prompt(state: AgentState) -> Literal["assemble_video", "write_post"]:
-    """If prompt building degraded to text_post (no approved assets), skip video assembly."""
-    if state["content_type"] == "text_post" or not state.get("omni_prompt"):
-        return "write_post"
-    return "assemble_video"
 
 
 # ---------------------------------------------------------------------------
@@ -86,9 +69,6 @@ def build_graph() -> StateGraph:
     g.add_node("plan_media_assets", plan_media_assets)
     g.add_node("generate_assets", generate_assets)
     g.add_node("validate_assets", validate_assets)
-    g.add_node("generate_tts", generate_tts)
-    g.add_node("build_omni_prompt", build_omni_prompt)
-    g.add_node("assemble_video", assemble_video)
     g.add_node("write_post", write_post)
     g.add_node("generate_rationale", generate_rationale)
     g.add_node("persist", persist)
@@ -105,35 +85,19 @@ def build_graph() -> StateGraph:
         {"decide_format": "decide_format", "end": END},
     )
 
-    # Conditional: format router
+    # Conditional: format router (image_post vs text_post only)
     g.add_conditional_edges(
         "decide_format",
         _after_format,
         {"write_script": "write_script", "write_post": "write_post"},
     )
 
-    # Script → plan → generate → validate (used by both video and image paths)
+    # Script → plan → generate → validate → post (image_post path only)
     g.add_edge("write_script", "plan_media_assets")
     g.add_edge("plan_media_assets", "generate_assets")
     g.add_edge("generate_assets", "validate_assets")
+    g.add_edge("validate_assets", "write_post")
 
-    # Conditional: after validation, branch video vs image/text
-    g.add_conditional_edges(
-        "validate_assets",
-        _after_validate,
-        {"generate_tts": "generate_tts", "write_post": "write_post"},
-    )
-
-    g.add_edge("generate_tts", "build_omni_prompt")
-
-    # Conditional: after prompt building, branch video vs degraded text
-    g.add_conditional_edges(
-        "build_omni_prompt",
-        _after_omni_prompt,
-        {"assemble_video": "assemble_video", "write_post": "write_post"},
-    )
-
-    g.add_edge("assemble_video", "write_post")
     g.add_edge("write_post", "generate_rationale")
     g.add_edge("generate_rationale", "persist")
     g.add_edge("persist", END)

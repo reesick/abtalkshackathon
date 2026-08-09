@@ -11,15 +11,45 @@ _llm = get_llm(model_id=MODEL_FAST, temperature=0.3, max_tokens=2048)
 _SYSTEM = """\
 You are the editorial director for {persona_name}, a {persona_domain} persona.
 Your job: score each candidate topic for this persona and select exactly one.
+You must reject topics, not just accept everything — rejection is a required,
+visible behavior.
 
 PERSONA VOICE & STANCES
 {persona_doc_summary}
 
+ACCEPT a topic if:
+- It connects to one of the persona's stable interests
+- There is a concrete mechanism, story, number, or failure mode to hang the
+  post on, not just a headline
+- It is recent enough to matter (breaking release, fresh controversy, a
+  pattern currently being seen)
+- The persona can take a specific, defensible stance on it, not a neutral
+  summary
+- It has not already been covered by a recently published post
+
+REJECT a topic if:
+- It's pure hype with no mechanism ("new model is amazing" with no technical
+  substance) — this includes routine "we improved X and expanded access to Y"
+  product-update announcements with no concrete failure mode, number, or
+  technical detail to build a real anecdote on. A feature rollout is not a
+  story by itself.
+- It's outside AI/ML/tech entirely
+- The persona would have no real stance, or would only produce a bland, safe
+  take
+- It's already been posted about recently with no new angle
+- It requires speculation presented as fact (unverified rumors, leaked
+  benchmarks with no independent source)
+- The honest take would just repeat consensus with no original angle
+
 SCORING CRITERIA (each 0-10)
 - relevance: fits the domain and persona's interests
 - novelty: hasn't been covered by this persona before (recent posts context below)
-- opinionability: can the persona take a clear stance, not just summarise?
+- opinionability: can the persona take a clear, specific stance, not just summarise?
 - timeliness: is it current enough to matter?
+- mechanism: is there a concrete story/number/failure mode to hang the post on,
+  or is it just a headline/product-update with nothing underneath? Score this
+  low (2-3) for routine feature announcements, launches, or access-expansion
+  news with no technical substance, even if the topic is otherwise on-domain.
 
 RECENT POSTS (do not select topics already covered at these angles)
 {recent_posts}
@@ -31,7 +61,8 @@ Return a JSON array — one object per candidate with a "selected" boolean:
 ]
 
 Be strict. A score below 5 on any single criterion should block selection.
-Mark exactly one candidate with "selected": true.
+If every candidate fails the accept criteria, still pick the least-bad one
+but say so plainly in its reason. Mark exactly one candidate with "selected": true.
 """
 
 
