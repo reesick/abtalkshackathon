@@ -9,7 +9,12 @@ subsystem integration — see agent/graph.py). Two content types now:
   - "meme_post": caption comes from the meme humour skill (meme/humour/*),
     this node writes the short accompanying post text, NOT the meme
     caption itself.
+
+Generates BOTH an English and a Hinglish variant of the post text (two
+real LLM calls, run in parallel) so the feed UI can offer a genuine EN/HI
+toggle — not a client-side translation fake.
 """
+import asyncio
 import logging
 import re
 
@@ -95,40 +100,38 @@ async def write_post(state: AgentState) -> AgentState:
     if content_type == "meme_post":
         return await _write_meme_accompanying_post(state, topic)
 
-    asset_context = ""
-    system_prompt = build_persona_prompt(state, asset_context=asset_context)
+    system_prompt = build_persona_prompt(state, asset_context="")
 
-    use_hinglish = state.get("persona", {}).get("hinglish", True)  # on by default per explicit instruction
-    if use_hinglish:
-        human_msg = _HINGLISH_INSTRUCTION.format(
-            title=topic.get("title", ""),
-            source_url=topic.get("url", ""),
-            summary=topic.get("summary", "")[:500],
-        )
-        llm = _llm_hinglish
-    else:
-        human_msg = _TEXT_INSTRUCTION.format(
-            title=topic.get("title", ""),
-            source_url=topic.get("url", ""),
-            summary=topic.get("summary", "")[:500],
-        )
-        llm = _llm
+    text_human_msg = _TEXT_INSTRUCTION.format(
+        title=topic.get("title", ""),
+        source_url=topic.get("url", ""),
+        summary=topic.get("summary", "")[:500],
+    )
+    hinglish_human_msg = _HINGLISH_INSTRUCTION.format(
+        title=topic.get("title", ""),
+        source_url=topic.get("url", ""),
+        summary=topic.get("summary", "")[:500],
+    )
 
-    response = await llm.ainvoke([
-        SystemMessage(content=system_prompt),
-        HumanMessage(content=human_msg),
-    ])
+    en_response, hi_response = await asyncio.gather(
+        _llm.ainvoke([SystemMessage(content=system_prompt), HumanMessage(content=text_human_msg)]),
+        _llm_hinglish.ainvoke([SystemMessage(content=system_prompt), HumanMessage(content=hinglish_human_msg)]),
+    )
 
-    post_text = _sanitize(response.content.strip())
+    post_text_en = _sanitize(en_response.content.strip())
+    post_text_hi = _sanitize(hi_response.content.strip())
 
-    return {**state, "post_text": post_text}
+    # Default display text stays Hinglish (matches the prior behavior/
+    # explicit instruction), with the English variant carried alongside
+    # for the feed UI's toggle.
+    return {**state, "post_text": post_text_hi, "post_text_en": post_text_en, "post_text_hi": post_text_hi}
 
 
 _MEME_ACCOMPANYING_INSTRUCTION = """\
 A meme has already been generated for this topic. Write a SHORT
-accompanying post text (1-3 sentences, Hinglish, casual) that sits above/
-below the meme image — do not repeat the meme's caption, add the context
-or stance the meme itself doesn't carry (the meme is just the joke).
+accompanying post text (1-3 sentences, casual) that sits above/below the
+meme image — do not repeat the meme's caption, add the context or stance
+the meme itself doesn't carry (the meme is just the joke).
 
 Topic: {title}
 Source: {source_url}
@@ -138,22 +141,34 @@ Meme caption: {caption_flat}
 End with the source link on its own line.
 """
 
+_MEME_ACCOMPANYING_INSTRUCTION_HINGLISH = _MEME_ACCOMPANYING_INSTRUCTION.replace(
+    "(1-3 sentences, casual)", "(1-3 sentences, natural Hinglish, casual)"
+)
+
 
 async def _write_meme_accompanying_post(state: AgentState, topic: dict) -> AgentState:
     meme_result = state.get("meme_result") or {}
     system_prompt = build_persona_prompt(state, asset_context="A meme image accompanies this post — see the caption below.")
 
-    human_msg = _MEME_ACCOMPANYING_INSTRUCTION.format(
+    en_human_msg = _MEME_ACCOMPANYING_INSTRUCTION.format(
+        title=topic.get("title", ""),
+        source_url=topic.get("url", ""),
+        template_name=meme_result.get("template_name", ""),
+        caption_flat=meme_result.get("caption_flat", ""),
+    )
+    hi_human_msg = _MEME_ACCOMPANYING_INSTRUCTION_HINGLISH.format(
         title=topic.get("title", ""),
         source_url=topic.get("url", ""),
         template_name=meme_result.get("template_name", ""),
         caption_flat=meme_result.get("caption_flat", ""),
     )
 
-    response = await _llm_hinglish.ainvoke([
-        SystemMessage(content=system_prompt),
-        HumanMessage(content=human_msg),
-    ])
+    en_response, hi_response = await asyncio.gather(
+        _llm.ainvoke([SystemMessage(content=system_prompt), HumanMessage(content=en_human_msg)]),
+        _llm_hinglish.ainvoke([SystemMessage(content=system_prompt), HumanMessage(content=hi_human_msg)]),
+    )
 
-    post_text = _sanitize(response.content.strip())
-    return {**state, "post_text": post_text}
+    post_text_en = _sanitize(en_response.content.strip())
+    post_text_hi = _sanitize(hi_response.content.strip())
+
+    return {**state, "post_text": post_text_hi, "post_text_en": post_text_en, "post_text_hi": post_text_hi}

@@ -1,290 +1,723 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ABTalks Feed</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ABTalks Feed</title>
+<style>
+  /* ===================================================================
+     Design tokens — adapted from htmldesign.md (Pinterest-design-analysis)
+     =================================================================== */
+  :root {
+    /* Colors */
+    --primary: #e60023;
+    --on-primary: #ffffff;
+    --primary-pressed: #cc001f;
+    --ink: #000000;
+    --ink-soft: #211922;
+    --body: #33332e;
+    --charcoal: #262622;
+    --mute: #62625b;
+    --ash: #91918c;
+    --stone: #c8c8c1;
+    --hairline: #dadad3;
+    --hairline-soft: #e5e5e0;
+    --secondary-bg: #e5e5e0;
+    --secondary-pressed: #c8c8c1;
+    --canvas: #ffffff;
+    --surface-soft: #fbfbf9;
+    --surface-card: #f6f6f3;
+    --surface-dark: #262622;
+    --on-dark: #ffffff;
+    --on-dark-mute: rgba(255,255,255,0.7);
+    --focus-outer: #435ee5;
+    --accent-purple: #7e238b;
+    --accent-purple-deep: #6845ab;
+    --success-deep: #103c25;
+    --success-pale: #c7f0da;
+    --error: #9e0a0a;
 
-        body {
-            background: #f0f2f5;
-            min-height: 100vh;
-        }
+    /* Radii — exactly three values in the system */
+    --r-md: 16px;
+    --r-lg: 32px;
+    --r-full: 9999px;
 
-        .header {
-            background: #fff;
-            padding: 12px 24px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
+    /* Spacing — 8px base unit */
+    --sp-xxs: 4px;
+    --sp-xs: 6px;
+    --sp-sm: 8px;
+    --sp-md: 12px;
+    --sp-lg: 16px;
+    --sp-xl: 24px;
+    --sp-xxl: 32px;
+    --sp-section: 64px;
+  }
 
-        .header h1 {
-            color: #0a66c2;
-            font-size: 24px;
-            font-weight: 600;
-        }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px 16px;
-        }
+  body {
+    /* Pin Sans substitute per htmldesign.md's documented fallback: Inter */
+    font-family: Inter, -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--surface-soft);
+    color: var(--body);
+    min-height: 100vh;
+  }
 
-        .agent-selector {
-            background: #fff;
-            padding: 16px;
-            border-radius: 8px;
-            margin-bottom: 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
+  /* ---------- Primary nav ---------- */
+  .primary-nav {
+    background: var(--canvas);
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--sp-xl);
+    border-bottom: 1px solid var(--hairline);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
 
-        .agent-selector input {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #dce6f1;
-            border-radius: 4px;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-sm);
+  }
 
-        .agent-selector button {
-            background: #0a66c2;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 14px;
-        }
+  .brand .mark {
+    color: var(--primary);
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.8px;
+  }
 
-        .agent-selector button:hover {
-            background: #004182;
-        }
+  .brand .sub {
+    color: var(--mute);
+    font-size: 12px;
+    font-weight: 500;
+  }
 
-        .post {
-            background: #fff;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-md);
+  }
 
-        .post-header {
-            padding: 12px 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+  /* Language toggle — global default, each post also carries its own
+     per-card toggle so the two AI outputs (EN generation / HI generation)
+     can be inspected independently. */
+  .lang-toggle {
+    display: inline-flex;
+    background: var(--surface-card);
+    border-radius: var(--r-full);
+    padding: 3px;
+    gap: 2px;
+  }
 
-        .avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #0a66c2, #70b5f9);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            font-weight: 600;
-            font-size: 18px;
-        }
+  .lang-toggle button {
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    border: none;
+    background: transparent;
+    color: var(--ink);
+    padding: 7px 14px;
+    border-radius: var(--r-full);
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
 
-        .post-meta {
-            flex: 1;
-        }
+  .lang-toggle button.active {
+    background: var(--ink);
+    color: var(--on-dark);
+  }
 
-        .post-meta .name {
-            font-weight: 600;
-            color: #000;
-            font-size: 14px;
-        }
+  /* ---------- Layout ---------- */
+  .container {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: var(--sp-xl) var(--sp-lg) var(--sp-section);
+  }
 
-        .post-meta .title {
-            color: #666;
-            font-size: 12px;
-        }
+  /* ---------- Agent selector card ---------- */
+  .agent-card {
+    background: var(--canvas);
+    border-radius: var(--r-md);
+    padding: var(--sp-lg);
+    margin-bottom: var(--sp-xl);
+    border: 1px solid var(--hairline);
+  }
 
-        .post-content {
-            padding: 0 16px 16px;
-        }
+  .agent-card .label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--mute);
+    margin-bottom: var(--sp-xs);
+  }
 
-        .post-content .text {
-            color: #000;
-            font-size: 14px;
-            line-height: 1.5;
-            margin-bottom: 12px;
-        }
+  .agent-card .persona-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-md);
+  }
 
-        .post-content .sources {
-            font-size: 12px;
-            color: #666;
-            padding-top: 8px;
-            border-top: 1px solid #eee;
-        }
+  .agent-card .persona-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ink);
+  }
 
-        .post-content .sources a {
-            color: #0a66c2;
-            text-decoration: none;
-        }
+  .agent-card .persona-domain {
+    font-size: 14px;
+    color: var(--mute);
+  }
 
-        .post-actions {
-            padding: 8px 16px;
-            border-top: 1px solid #eee;
-            display: flex;
-            gap: 16px;
-        }
+  .refresh-btn {
+    background: var(--primary);
+    color: var(--on-primary);
+    border: none;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 6px 14px;
+    height: 40px;
+    border-radius: var(--r-md);
+    cursor: pointer;
+  }
 
-        .action-btn {
-            background: none;
-            border: none;
-            color: #666;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px;
-            border-radius: 4px;
-        }
+  .refresh-btn:active { background: var(--primary-pressed); }
 
-        .action-btn:hover {
-            background: #f0f2f5;
-        }
+  /* ---------- Post card ---------- */
+  .post {
+    background: var(--canvas);
+    border-radius: var(--r-md);
+    border: 1px solid var(--hairline);
+    margin-bottom: var(--sp-lg);
+    overflow: hidden;
+  }
 
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-        }
+  .post-header {
+    padding: var(--sp-lg) var(--sp-lg) var(--sp-md);
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sp-md);
+  }
 
-        .empty {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-            background: #fff;
-            border-radius: 8px;
-        }
+  .avatar {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    border-radius: var(--r-full);
+    background: linear-gradient(135deg, var(--primary), var(--accent-purple));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--on-primary);
+    font-weight: 700;
+    font-size: 15px;
+  }
 
-        .timestamp {
-            font-size: 12px;
-            color: #666;
-            padding: 0 16px 12px;
-        }
-    </style>
+  .post-meta { flex: 1; min-width: 0; }
+
+  .post-meta .name-row {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-xs);
+    flex-wrap: wrap;
+  }
+
+  .post-meta .name {
+    font-weight: 600;
+    color: var(--ink);
+    font-size: 15px;
+  }
+
+  .post-meta .domain-pill {
+    background: var(--surface-card);
+    color: var(--mute);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: var(--r-full);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  .post-meta .sub {
+    color: var(--mute);
+    font-size: 12px;
+    margin-top: 2px;
+  }
+
+  .content-type-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: var(--r-full);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+  }
+
+  .content-type-badge.meme_post {
+    background: var(--success-pale);
+    color: var(--success-deep);
+  }
+
+  .content-type-badge.text_post {
+    background: var(--surface-card);
+    color: var(--charcoal);
+  }
+
+  .post-body { padding: 0 var(--sp-lg) var(--sp-lg); }
+
+  .post-lang-toggle {
+    display: inline-flex;
+    background: var(--surface-card);
+    border-radius: var(--r-full);
+    padding: 3px;
+    gap: 2px;
+    margin-bottom: var(--sp-md);
+  }
+
+  .post-lang-toggle button {
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    border: none;
+    background: transparent;
+    color: var(--ink);
+    padding: 5px 12px;
+    border-radius: var(--r-full);
+    cursor: pointer;
+  }
+
+  .post-lang-toggle button.active {
+    background: var(--ink);
+    color: var(--on-dark);
+  }
+
+  .post-text {
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--body);
+    white-space: pre-wrap;
+    margin-bottom: var(--sp-md);
+  }
+
+  .post-media {
+    width: 100%;
+    border-radius: var(--r-md);
+    display: block;
+    margin-bottom: var(--sp-md);
+    background: var(--surface-card);
+  }
+
+  .post-topic-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-xs);
+    background: var(--surface-card);
+    color: var(--charcoal);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: var(--r-full);
+    margin-bottom: var(--sp-md);
+  }
+
+  .sources {
+    font-size: 12px;
+    color: var(--mute);
+    padding-top: var(--sp-md);
+    border-top: 1px solid var(--hairline-soft);
+  }
+
+  .sources a {
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  /* ---------- Judge panels (both AIs shown) ---------- */
+  .judge-panels {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--sp-sm);
+    margin-top: var(--sp-md);
+  }
+
+  @media (min-width: 560px) {
+    .judge-panels.two-up { grid-template-columns: 1fr 1fr; }
+  }
+
+  .judge-card {
+    background: var(--surface-card);
+    border-radius: var(--r-md);
+    padding: var(--sp-md);
+  }
+
+  .judge-card .judge-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--mute);
+    margin-bottom: var(--sp-xs);
+    display: flex;
+    align-items: center;
+    gap: var(--sp-xs);
+  }
+
+  .judge-card .judge-title .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: var(--r-full);
+    background: var(--accent-purple);
+  }
+
+  .judge-card.meme .judge-title .dot { background: var(--primary); }
+
+  .judge-card .judge-reason {
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--charcoal);
+  }
+
+  .judge-card .judge-score-row {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-sm);
+    margin-top: var(--sp-xs);
+  }
+
+  .judge-score {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--on-dark);
+    background: var(--ink);
+    padding: 2px 8px;
+    border-radius: var(--r-full);
+  }
+
+  .judge-meta {
+    font-size: 11px;
+    color: var(--ash);
+  }
+
+  .timestamp {
+    font-size: 12px;
+    color: var(--ash);
+    padding: 0 var(--sp-lg) var(--sp-md);
+  }
+
+  /* ---------- Actions ---------- */
+  .post-actions {
+    padding: var(--sp-sm) var(--sp-lg);
+    border-top: 1px solid var(--hairline-soft);
+    display: flex;
+    gap: var(--sp-xs);
+  }
+
+  .action-btn {
+    background: transparent;
+    border: none;
+    color: var(--mute);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border-radius: var(--r-md);
+  }
+
+  .action-btn:hover { background: var(--surface-card); }
+
+  /* ---------- States ---------- */
+  .loading, .empty {
+    text-align: center;
+    padding: var(--sp-xxl);
+    color: var(--mute);
+    font-size: 14px;
+  }
+
+  .empty {
+    background: var(--canvas);
+    border-radius: var(--r-md);
+    border: 1px solid var(--hairline);
+  }
+
+  .empty code {
+    display: block;
+    margin-top: var(--sp-md);
+    background: var(--surface-card);
+    padding: var(--sp-md);
+    border-radius: var(--sp-sm);
+    font-size: 11px;
+    text-align: left;
+    overflow-x: auto;
+    color: var(--charcoal);
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 480px) {
+    .container { padding: var(--sp-lg) var(--sp-md) var(--sp-xxl); }
+    .primary-nav { padding: 0 var(--sp-lg); }
+    .brand .sub { display: none; }
+  }
+</style>
 </head>
 <body>
-    <div class="header">
-        <h1>ABTalks</h1>
-    </div>
 
-    <div class="container">
-        <div id="feed">
-            <div class="loading">Loading...</div>
+  <nav class="primary-nav">
+    <div class="brand">
+      <span class="mark">ABTalks</span>
+      <span class="sub">autonomous feed</span>
+    </div>
+    <div class="nav-right">
+      <div class="lang-toggle" id="globalLangToggle">
+        <button data-lang="hi" class="active">HI</button>
+        <button data-lang="en">EN</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="agent-card" id="agentCard" style="display:none;">
+      <div class="label">Active agent</div>
+      <div class="persona-row">
+        <div>
+          <div class="persona-name" id="personaName">—</div>
+          <div class="persona-domain" id="personaDomain">—</div>
         </div>
+        <button class="refresh-btn" id="refreshBtn">Refresh</button>
+      </div>
     </div>
 
-    <script>
-        function getInitials(name) {
-            if (!name) return 'AB';
-            return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-        }
+    <div id="feed">
+      <div class="loading">Loading…</div>
+    </div>
+  </div>
 
-        function timeAgo(dateString) {
-            if (!dateString) return '';
-            const date = new Date(dateString);
-            const now = new Date();
-            const diff = Math.floor((now - date) / 1000);
+<script>
+  // Global language preference — each post also has its own local toggle,
+  // initialized from this default, so both AI-generated variants (the
+  // English generation call and the Hinglish generation call — see
+  // agent/nodes/post.py) can be inspected side by side, per-post.
+  let globalLang = 'hi';
 
-            if (diff < 60) return 'just now';
-            if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
-            if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
-            if (diff < 604800) return Math.floor(diff / 86400) + 'd ago';
-            return date.toLocaleDateString();
-        }
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
 
-        async function loadFeed() {
-            let currentAgentId;
-            // First, get the latest agent ID
-            try {
-                const agentRes = await fetch('/api/agent/latest-agent');
-                const agentData = await agentRes.json();
-                
-                if (!agentData.agentId) {
-                    document.getElementById('feed').innerHTML = '<div class="empty">No agents found. Initialize one with: <br><code>curl -X POST http://localhost:8000/api/agent/init -H "Content-Type: application/json" -d "{\\"persona_name\\": \\"Ada Shen\\", \\"persona_domain\\": \\"ML infrastructure\\", \\"voice_rules\\": \\"terse\\"}"</code></div>';
-                    return;
-                }
-                
-                currentAgentId = agentData.agentId;
-            } catch (e) {
-                document.getElementById('feed').innerHTML = '<div class="empty">Error loading agent: ' + e.message + '</div>';
-                return;
-            }
+  function getInitials(name) {
+    if (!name) return 'AB';
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  }
 
-            const feed = document.getElementById('feed');
-            feed.innerHTML = '<div class="loading">Loading posts...</div>';
+  function timeAgo(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const now = new Date();
+    const diff = Math.floor((now - date) / 1000);
+    if (diff < 60) return 'just now';
+    if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+    if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+    if (diff < 604800) return Math.floor(diff / 86400) + 'd ago';
+    return date.toLocaleDateString();
+  }
 
-            try {
-                const response = await fetch(`/api/agent/feed?agentId=${currentAgentId}&limit=10`);
-                if (!response.ok) {
-                    const err = await response.json();
-                    throw new Error(err.detail || 'Failed to load feed');
-                }
-                const data = await response.json();
+  function sourceLinks(sources) {
+    if (!sources || !sources.length) return '';
+    const links = sources.filter(s => s && s.startsWith('http')).map(s => {
+      try {
+        return `<a href="${s}" target="_blank" rel="noopener">${new URL(s).hostname}</a>`;
+      } catch {
+        return `<span>${escapeHtml(s)}</span>`;
+      }
+    });
+    if (!links.length) return '';
+    return `<div class="sources">Sources: ${links.join(', ')}</div>`;
+  }
 
-                if (!data.posts || data.posts.length === 0) {
-                    feed.innerHTML = '<div class="empty">No posts yet. Initialize an agent first!</div>';
-                    return;
-                }
+  // Renders the editorial-judge rationale panel (topic selection judge)
+  // and, when present, the meme humour-judge panel (meme subsystem judge)
+  // side by side — "both AIs" that evaluate a post before it's published.
+  function judgePanels(post) {
+    const panels = [];
 
-                feed.innerHTML = data.posts.map(post => `
-                    <div class="post">
-                        <div class="post-header">
-                            <div class="avatar">${getInitials(data.personaName || 'AB')}</div>
-                            <div class="post-meta">
-                                <div class="name">${data.personaName || 'AI Agent'}</div>
-                                <div class="title">${data.personaDomain || 'Tech'}</div>
-                            </div>
-                        </div>
-                        <div class="timestamp">${post.created_at ? timeAgo(post.created_at) : ''}</div>
-                        <div class="post-content">
-                            <div class="text">${post.text || ''}</div>
-                            ${post.sources && post.sources.length ? `
-                                <div class="sources">
-                                    Sources: ${post.sources.filter(s => s).map(s => {
-                                        try {
-                                            return '<a href="' + s + '" target="_blank">' + new URL(s).hostname + '</a>';
-                                        } catch {
-                                            return '<span>' + s + '</span>';
-                                        }
-                                    }).join(', ')}
-                                </div>
-                            ` : ''}
-                        </div>
-                        <div class="post-actions">
-                            <button class="action-btn">👍 Like</button>
-                            <button class="action-btn">💬 Comment</button>
-                            <button class="action-btn">🔄 Share</button>
-                            <button class="action-btn">✈️ Send</button>
-                        </div>
-                    </div>
-                `).join('');
-            } catch (error) {
-                feed.innerHTML = `<div class="empty">Error: ${error.message}</div>`;
-            }
-        }
+    if (post.rationale) {
+      const r = post.rationale;
+      const reason = r.selected_because || r.why_selected || '';
+      panels.push(`
+        <div class="judge-card topic">
+          <div class="judge-title"><span class="dot"></span>Editorial judge — topic selection</div>
+          <div class="judge-reason">${escapeHtml(reason)}</div>
+        </div>
+      `);
+    }
 
-        // Auto-load feed on page load
-        loadFeed();
-    </script>
+    if (post.meme_judge) {
+      const mj = post.meme_judge;
+      panels.push(`
+        <div class="judge-card meme">
+          <div class="judge-title"><span class="dot"></span>Humour judge — meme selection</div>
+          <div class="judge-reason">${escapeHtml(mj.reasoning || '')}</div>
+          <div class="judge-score-row">
+            ${mj.score != null ? `<span class="judge-score">${Number(mj.score).toFixed(1)}</span>` : ''}
+            <span class="judge-meta">${escapeHtml(mj.template_name || '')}${mj.humour_mechanism ? ' · ' + escapeHtml(mj.humour_mechanism) : ''}</span>
+          </div>
+        </div>
+      `);
+    }
+
+    if (!panels.length) return '';
+    const twoUp = panels.length > 1 ? ' two-up' : '';
+    return `<div class="judge-panels${twoUp}">${panels.join('')}</div>`;
+  }
+
+  function postCard(post, personaName, personaDomain) {
+    const textEn = post.text_en || post.text || '';
+    const textHi = post.text_hi || post.text || '';
+    const hasBothLangs = !!(post.text_en && post.text_hi && post.text_en !== post.text_hi);
+
+    const badgeLabel = post.content_type === 'meme_post' ? 'Meme' : 'Text';
+
+    const mediaHtml = post.media_url
+      ? `<img class="post-media" src="${post.media_url}" alt="${escapeHtml(post.topic_title || '')}" loading="lazy" />`
+      : '';
+
+    const topicPill = post.topic_title
+      ? `<div class="post-topic-pill">📌 ${escapeHtml(post.topic_title)}</div>`
+      : '';
+
+    const langToggleHtml = hasBothLangs ? `
+      <div class="post-lang-toggle" data-post-id="${post.id}">
+        <button data-lang="hi" class="${globalLang === 'hi' ? 'active' : ''}">HI</button>
+        <button data-lang="en" class="${globalLang === 'en' ? 'active' : ''}">EN</button>
+      </div>
+    ` : '';
+
+    return `
+      <article class="post" data-post-id="${post.id}" data-text-en="${encodeURIComponent(textEn)}" data-text-hi="${encodeURIComponent(textHi)}">
+        <div class="post-header">
+          <div class="avatar">${getInitials(personaName)}</div>
+          <div class="post-meta">
+            <div class="name-row">
+              <span class="name">${escapeHtml(personaName || 'AI Agent')}</span>
+              <span class="domain-pill">${escapeHtml(personaDomain || 'tech')}</span>
+            </div>
+            <div class="sub">Autonomously discovered, judged, and posted</div>
+          </div>
+          <span class="content-type-badge ${post.content_type}">${badgeLabel}</span>
+        </div>
+        <div class="timestamp">${post.created_at ? timeAgo(post.created_at) : ''}</div>
+        <div class="post-body">
+          ${langToggleHtml}
+          ${topicPill}
+          <div class="post-text" data-role="post-text">${escapeHtml(globalLang === 'en' ? textEn : textHi)}</div>
+          ${mediaHtml}
+          ${judgePanels(post)}
+          ${sourceLinks(post.sources)}
+        </div>
+        <div class="post-actions">
+          <button class="action-btn">👍 Like</button>
+          <button class="action-btn">💬 Comment</button>
+          <button class="action-btn">🔄 Share</button>
+        </div>
+      </article>
+    `;
+  }
+
+  function wirePostLangToggles() {
+    document.querySelectorAll('.post-lang-toggle').forEach(toggle => {
+      toggle.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const lang = btn.dataset.lang;
+          toggle.querySelectorAll('button').forEach(b => b.classList.toggle('active', b === btn));
+          const article = toggle.closest('.post');
+          const textEl = article.querySelector('[data-role="post-text"]');
+          const raw = decodeURIComponent(article.dataset[lang === 'en' ? 'textEn' : 'textHi']);
+          textEl.textContent = raw;
+        });
+      });
+    });
+  }
+
+  function applyGlobalLang(lang) {
+    globalLang = lang;
+    document.querySelectorAll('#globalLangToggle button').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+    document.querySelectorAll('.post').forEach(article => {
+      const textEl = article.querySelector('[data-role="post-text"]');
+      const raw = decodeURIComponent(article.dataset[lang === 'en' ? 'textEn' : 'textHi']);
+      if (textEl) textEl.textContent = raw;
+      const toggle = article.querySelector('.post-lang-toggle');
+      if (toggle) toggle.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+    });
+  }
+
+  document.getElementById('globalLangToggle').addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    applyGlobalLang(btn.dataset.lang);
+  });
+
+  async function loadFeed() {
+    const feed = document.getElementById('feed');
+    let currentAgentId, personaName, personaDomain;
+
+    try {
+      const agentRes = await fetch('/api/agent/latest-agent');
+      const agentData = await agentRes.json();
+
+      if (!agentData.agentId) {
+        document.getElementById('agentCard').style.display = 'none';
+        feed.innerHTML = `<div class="empty">No agents found yet. Initialize one:
+          <code>curl -X POST http://localhost:8000/api/agent/init -H "Content-Type: application/json" -d '{"persona_name": "Kabir Rao", "persona_domain": "ML engineering"}'</code>
+        </div>`;
+        return;
+      }
+      currentAgentId = agentData.agentId;
+    } catch (e) {
+      feed.innerHTML = `<div class="empty">Could not reach the agent API: ${escapeHtml(e.message)}</div>`;
+      return;
+    }
+
+    feed.innerHTML = '<div class="loading">Loading posts…</div>';
+
+    try {
+      const response = await fetch(`/api/agent/feed?agentId=${currentAgentId}&limit=20`);
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.detail || 'Failed to load feed');
+      }
+      const data = await response.json();
+      personaName = data.personaName;
+      personaDomain = data.personaDomain;
+
+      document.getElementById('agentCard').style.display = '';
+      document.getElementById('personaName').textContent = personaName || 'Unnamed agent';
+      document.getElementById('personaDomain').textContent = personaDomain || '';
+
+      if (!data.posts || data.posts.length === 0) {
+        feed.innerHTML = '<div class="empty">No posts yet. The scheduler fires the first tick a few seconds after agent init — check back shortly.</div>';
+        return;
+      }
+
+      feed.innerHTML = data.posts.map(post => postCard(post, personaName, personaDomain)).join('');
+      wirePostLangToggles();
+    } catch (error) {
+      feed.innerHTML = `<div class="empty">Error: ${escapeHtml(error.message)}</div>`;
+    }
+  }
+
+  document.getElementById('refreshBtn').addEventListener('click', loadFeed);
+
+  loadFeed();
+</script>
 </body>
 </html>

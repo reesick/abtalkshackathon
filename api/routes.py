@@ -41,6 +41,8 @@ class PostOut(BaseModel):
     id: int
     agent_id: str
     text: str
+    text_en: Optional[str] = None
+    text_hi: Optional[str] = None
     media_url: Optional[str]
     media_type: Optional[str]
     content_type: str
@@ -48,6 +50,7 @@ class PostOut(BaseModel):
     topic_url: Optional[str]
     rationale: Optional[dict]
     sources: Optional[list[str]]
+    meme_judge: Optional[dict] = None
     created_at: datetime
 
 
@@ -197,6 +200,8 @@ async def _get_feed_for_agent(agentId: str, limit: int, cursor: Optional[int]) -
                 id=r.id,
                 agent_id=r.agent_id,
                 text=r.text,
+                text_en=r.text_en,
+                text_hi=r.text_hi,
                 media_url=r.media_url,
                 media_type=r.media_type,
                 content_type=r.content_type,
@@ -204,6 +209,7 @@ async def _get_feed_for_agent(agentId: str, limit: int, cursor: Optional[int]) -
                 topic_url=r.topic_url,
                 rationale=json.loads(r.rationale) if r.rationale else None,
                 sources=json.loads(r.sources) if r.sources else None,
+                meme_judge=json.loads(r.meme_judge_json) if r.meme_judge_json else None,
                 created_at=r.created_at,
             )
             for r in rows

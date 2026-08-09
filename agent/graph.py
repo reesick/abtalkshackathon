@@ -131,6 +131,8 @@ async def run_agent_tick(agent_id: str, persona: dict, persona_doc: dict, memory
         "meme_opportunity": None,
         "meme_result": None,
         "post_text": None,
+        "post_text_en": None,
+        "post_text_hi": None,
         "rationale": None,
         "error": None,
     }

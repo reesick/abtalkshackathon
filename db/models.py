@@ -45,15 +45,18 @@ class Post(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     agent_id = Column(String, nullable=False, index=True)
     tick_id = Column(String, nullable=False)
-    text = Column(Text, nullable=False)
+    text = Column(Text, nullable=False)                 # primary/default text (Hinglish, per current voice)
+    text_en = Column(Text, nullable=True)                # plain-English variant, for the EN/HI toggle
+    text_hi = Column(Text, nullable=True)                # Hinglish variant (usually == text today)
     media_url = Column(String, nullable=True)
-    media_type = Column(String, nullable=True)          # "video", "image", None
-    content_type = Column(String, nullable=False)       # video_post / image_post / text_post
+    media_type = Column(String, nullable=True)          # "meme", "image", "video", None
+    content_type = Column(String, nullable=False)       # meme_post / text_post
     topic_title = Column(String, nullable=True)
     topic_url = Column(String, nullable=True)
     topic_source = Column(String, nullable=True)
-    rationale = Column(Text, nullable=True)             # JSON string
+    rationale = Column(Text, nullable=True)             # JSON string — editorial judge's rationale
     sources = Column(Text, nullable=True)               # JSON array string
+    meme_judge_json = Column(Text, nullable=True)        # JSON — meme humour judge's score/reasoning, if content_type == meme_post
     created_at = Column(DateTime, nullable=False)
 
 

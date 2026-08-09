@@ -79,13 +79,25 @@ async def persist(state: AgentState) -> AgentState:
     topic = state["selected_topic"]
     media_url, media_type = _media_url(state)
     rationale = state.get("rationale") or {}
+    meme_result = state.get("meme_result")
     now = datetime.now(timezone.utc)
+
+    meme_judge_json = None
+    if meme_result and meme_result.get("should_make_meme"):
+        meme_judge_json = json.dumps({
+            "template_name": meme_result.get("template_name"),
+            "humour_mechanism": meme_result.get("humour_mechanism"),
+            "score": meme_result.get("score"),
+            "reasoning": meme_result.get("reason"),
+        })
 
     with get_session() as db:
         post = Post(
             agent_id=state["agent_id"],
             tick_id=state.get("tick_id", ""),
             text=state.get("post_text", ""),
+            text_en=state.get("post_text_en"),
+            text_hi=state.get("post_text_hi"),
             media_url=media_url,
             media_type=media_type,
             content_type=state["content_type"],
@@ -94,6 +106,7 @@ async def persist(state: AgentState) -> AgentState:
             topic_source=topic.get("source", ""),
             rationale=json.dumps(rationale),
             sources=json.dumps(rationale.get("sources", [])),
+            meme_judge_json=meme_judge_json,
             created_at=now,
         )
         db.add(post)
@@ -111,7 +124,6 @@ async def persist(state: AgentState) -> AgentState:
         db.refresh(post)
         post_id = post.id
 
-    meme_result = state.get("meme_result")
     if meme_result and meme_result.get("rendered_url"):
         from meme.memory.usage import record_usage
         record_usage(

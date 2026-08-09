@@ -121,7 +121,9 @@ class AgentState(TypedDict):
     meme_result: Optional[MemeResult]
 
     # --- publishing ---
-    post_text: Optional[str]
+    post_text: Optional[str]           # default display text (Hinglish)
+    post_text_en: Optional[str]        # plain-English variant, for the EN/HI toggle
+    post_text_hi: Optional[str]        # Hinglish variant (usually == post_text)
     rationale: Optional[dict]         # {selected_because, relevant_now_because, rejected_alternatives, sources[]}
 
     # --- memory ---
