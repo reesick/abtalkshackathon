@@ -1,16 +1,21 @@
 """
 LangGraph StateGraph wiring.
 
-Scope (ml_engineer_persona.md section 6): text + single static image per
-post only. Video and TTS are explicitly out of scope for this version —
-agent/nodes/generate_tts.py, agent/nodes/omni_prompt.py, and
-agent/nodes/video.py are left on disk as a clean seam for later, but are
-NOT wired into this graph. Do not invoke them from here.
+Scope: meme subsystem integration (see
+meme_intelligence_humour_system_implementation.md). Image generation is
+disconnected — agent/nodes/script.py, plan_assets.py, assets.py,
+validate_assets.py, and agent/nodes/format.py (decide_format) remain on
+disk as a clean seam but are NOT wired into this graph. Video was already
+disconnected in a prior pass (agent/nodes/video.py, omni_prompt.py — never
+wired here). TTS (agent/nodes/generate_tts.py) is also left disconnected
+but explicitly NOT touched/removed per instruction — it stays exactly as
+it was, a clean seam, not reconnected either.
 
 Graph shape:
-  discover → filter → judge → [no topic: END] → format
-    → [image] → write_script → plan_media_assets → generate_assets → validate_assets ──→ write_post
-    → [text] ────────────────────────────────────────────────────────────────────────→ write_post
+  discover → filter → judge → [no topic: END] → meme_opportunity
+    → [meme_post]  → meme_generate (may degrade content_type back to text_post
+                       if quality gate fails or render fails) → write_post
+    → [text_post] ────────────────────────────────────────────→ write_post
   → generate_rationale → persist → END
 """
 import logging
@@ -19,17 +24,14 @@ from typing import Literal
 
 from langgraph.graph import END, START, StateGraph
 
-from agent.nodes.assets import generate_assets
 from agent.nodes.discover import discover_topics
 from agent.nodes.filter import filter_seen
-from agent.nodes.format import decide_format
 from agent.nodes.judge import editorial_judge
+from agent.nodes.meme_generate import meme_generate_node
+from agent.nodes.meme_opportunity import meme_opportunity_node
 from agent.nodes.persist import persist
-from agent.nodes.plan_assets import plan_media_assets
 from agent.nodes.post import write_post
 from agent.nodes.rationale import generate_rationale
-from agent.nodes.script import write_script
-from agent.nodes.validate_assets import validate_assets
 from agent.state import AgentState
 
 logger = logging.getLogger(__name__)
@@ -39,18 +41,17 @@ logger = logging.getLogger(__name__)
 # Conditional edge helpers
 # ---------------------------------------------------------------------------
 
-def _after_judge(state: AgentState) -> Literal["decide_format", "end"]:
+def _after_judge(state: AgentState) -> Literal["meme_opportunity", "end"]:
     """If judge found nothing, abort the tick cleanly."""
     if not state.get("selected_topic") or state.get("error") == "no_candidates":
         return "end"
-    return "decide_format"
+    return "meme_opportunity"
 
 
-def _after_format(state: AgentState) -> Literal["write_script", "write_post"]:
-    """Text posts skip the script/asset nodes entirely."""
-    if state["content_type"] == "text_post":
-        return "write_post"
-    return "write_script"
+def _after_meme_opportunity(state: AgentState) -> Literal["meme_generate", "write_post"]:
+    if state["content_type"] == "meme_post":
+        return "meme_generate"
+    return "write_post"
 
 
 # ---------------------------------------------------------------------------
@@ -64,11 +65,8 @@ def build_graph() -> StateGraph:
     g.add_node("discover_topics", discover_topics)
     g.add_node("filter_seen", filter_seen)
     g.add_node("editorial_judge", editorial_judge)
-    g.add_node("decide_format", decide_format)
-    g.add_node("write_script", write_script)
-    g.add_node("plan_media_assets", plan_media_assets)
-    g.add_node("generate_assets", generate_assets)
-    g.add_node("validate_assets", validate_assets)
+    g.add_node("meme_opportunity", meme_opportunity_node)
+    g.add_node("meme_generate", meme_generate_node)
     g.add_node("write_post", write_post)
     g.add_node("generate_rationale", generate_rationale)
     g.add_node("persist", persist)
@@ -82,21 +80,19 @@ def build_graph() -> StateGraph:
     g.add_conditional_edges(
         "editorial_judge",
         _after_judge,
-        {"decide_format": "decide_format", "end": END},
+        {"meme_opportunity": "meme_opportunity", "end": END},
     )
 
-    # Conditional: format router (image_post vs text_post only)
+    # Conditional: meme vs text routing
     g.add_conditional_edges(
-        "decide_format",
-        _after_format,
-        {"write_script": "write_script", "write_post": "write_post"},
+        "meme_opportunity",
+        _after_meme_opportunity,
+        {"meme_generate": "meme_generate", "write_post": "write_post"},
     )
 
-    # Script → plan → generate → validate → post (image_post path only)
-    g.add_edge("write_script", "plan_media_assets")
-    g.add_edge("plan_media_assets", "generate_assets")
-    g.add_edge("generate_assets", "validate_assets")
-    g.add_edge("validate_assets", "write_post")
+    # meme_generate always flows to write_post (it may have degraded
+    # content_type back to text_post internally — write_post reads that).
+    g.add_edge("meme_generate", "write_post")
 
     g.add_edge("write_post", "generate_rationale")
     g.add_edge("generate_rationale", "persist")
@@ -132,6 +128,8 @@ async def run_agent_tick(agent_id: str, persona: dict, persona_doc: dict, memory
         "video_asset": None,
         "tts_segments": [],
         "omni_prompt": None,
+        "meme_opportunity": None,
+        "meme_result": None,
         "post_text": None,
         "rationale": None,
         "error": None,

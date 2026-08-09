@@ -22,13 +22,13 @@ logger = logging.getLogger(__name__)
 
 def _media_url(state: AgentState) -> tuple[str | None, str | None]:
     """
-    Video is out of scope for this persona version (ml_engineer_persona.md
-    section 6) — only a single static image per post, or no media at all.
+    Image generation is disconnected (meme subsystem integration). The
+    only media path now is a rendered meme, if the meme engine produced
+    and rendered one for this post.
     """
-    if state.get("image_assets"):
-        first = next((a for a in state["image_assets"] if a.get("url")), None)
-        if first:
-            return first["url"], "image"
+    meme_result = state.get("meme_result")
+    if meme_result and meme_result.get("rendered_url"):
+        return meme_result["rendered_url"], "meme"
     return None, None
 
 
@@ -110,6 +110,23 @@ async def persist(state: AgentState) -> AgentState:
         db.commit()
         db.refresh(post)
         post_id = post.id
+
+    meme_result = state.get("meme_result")
+    if meme_result and meme_result.get("rendered_url"):
+        from meme.memory.usage import record_usage
+        record_usage(
+            agent_id=state["agent_id"],
+            post_id=post_id,
+            template_id=meme_result["template_id"],
+            template_name=meme_result["template_name"],
+            template_family=meme_result.get("template_family"),
+            humour_mechanism=meme_result.get("humour_mechanism"),
+            topic_title=topic.get("title", ""),
+            topic_source=topic.get("source", ""),
+            text_boxes=meme_result.get("text_boxes", []),
+            humour_score=meme_result.get("score"),
+            judge_score=None,
+        )
 
     await _push_breeth_memory(state)
 

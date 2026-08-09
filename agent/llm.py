@@ -36,3 +36,17 @@ def get_llm(
         api_key=BEDROCK_API_KEY,
         model_kwargs=model_kwargs,
     )
+
+
+def repair_json(raw: str) -> str:
+    """
+    Shared JSON repair for a real, observed Mistral/Mixtral quirk: the
+    model occasionally emits Python-style backslash-escaped apostrophes
+    inside JSON string values (e.g. "doesn\\'t") which is invalid JSON —
+    JSON only requires escaping \\" and \\\\, not \\'. Observed directly in
+    this project's meme humour judge output. Strip the invalid escape
+    rather than let one stray backslash break parsing of an otherwise-valid
+    response. Used by every node/module that parses structured JSON out of
+    a raw model response.
+    """
+    return raw.replace("\\'", "'")
