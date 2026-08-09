@@ -326,6 +326,53 @@
     margin-bottom: var(--sp-md);
   }
 
+  /* Topic headline block — bold title + source domain, read like an
+     article card header, clearly separated from the persona's own post
+     text below it. */
+  .topic-block {
+    margin-bottom: var(--sp-md);
+    padding-bottom: var(--sp-md);
+    border-bottom: 1px solid var(--hairline-soft);
+  }
+
+  .topic-block .topic-title {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--ink);
+    letter-spacing: -0.2px;
+    margin-bottom: var(--sp-xs);
+  }
+
+  .topic-block .topic-source {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--mute);
+  }
+
+  .topic-block .topic-source .source-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: var(--r-full);
+    background: var(--ash);
+  }
+
+  .topic-block .topic-source a {
+    color: var(--ink-soft);
+    text-decoration: underline;
+    text-decoration-color: var(--hairline);
+    text-underline-offset: 2px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .topic-block .topic-source a:hover {
+    text-decoration-color: var(--ink-soft);
+  }
+
   .sources {
     font-size: 12px;
     color: var(--mute);
@@ -531,17 +578,22 @@
     return date.toLocaleDateString();
   }
 
-  function sourceLinks(sources) {
+  function sourceLinks(sources, topicUrl) {
     if (!sources || !sources.length) return '';
-    const links = sources.filter(s => s && s.startsWith('http')).map(s => {
+    // Drop entries that just duplicate the topic-block's own source link
+    // (the common case right now — one topic, one source) and non-URL
+    // entries like the bare "rss" source-type tag, which isn't a link at
+    // all and shouldn't render as one.
+    const extra = sources.filter(s => s && s.startsWith('http') && s !== topicUrl);
+    if (!extra.length) return '';
+    const links = extra.map(s => {
       try {
         return `<a href="${s}" target="_blank" rel="noopener">${new URL(s).hostname}</a>`;
       } catch {
         return `<span>${escapeHtml(s)}</span>`;
       }
     });
-    if (!links.length) return '';
-    return `<div class="sources">Sources: ${links.join(', ')}</div>`;
+    return `<div class="sources">Additional sources: ${links.join(', ')}</div>`;
   }
 
   // Renders the editorial-judge rationale panel (topic selection judge)
@@ -591,9 +643,27 @@
       ? `<img class="post-media" src="${post.media_url}" alt="${escapeHtml(post.topic_title || '')}" loading="lazy" />`
       : '';
 
-    const topicPill = post.topic_title
-      ? `<div class="post-topic-pill">📌 ${escapeHtml(post.topic_title)}</div>`
-      : '';
+    // Topic headline block: bold title (the story the post is about) with
+    // the source domain as a small clickable label beneath it — kept
+    // visually distinct from the persona's own commentary text below.
+    let topicBlock = '';
+    if (post.topic_title) {
+      let sourceHtml = '';
+      if (post.topic_url) {
+        try {
+          const hostname = new URL(post.topic_url).hostname.replace(/^www\./, '');
+          sourceHtml = `<span class="topic-source"><span class="source-dot"></span><a href="${post.topic_url}" target="_blank" rel="noopener">${escapeHtml(hostname)}</a></span>`;
+        } catch {
+          sourceHtml = `<span class="topic-source"><span class="source-dot"></span>${escapeHtml(post.topic_url)}</span>`;
+        }
+      }
+      topicBlock = `
+        <div class="topic-block">
+          <div class="topic-title">${escapeHtml(post.topic_title)}</div>
+          ${sourceHtml}
+        </div>
+      `;
+    }
 
     const langToggleHtml = hasBothLangs ? `
       <div class="post-lang-toggle" data-post-id="${post.id}">
@@ -617,12 +687,12 @@
         </div>
         <div class="timestamp">${post.created_at ? timeAgo(post.created_at) : ''}</div>
         <div class="post-body">
+          ${topicBlock}
           ${langToggleHtml}
-          ${topicPill}
           <div class="post-text" data-role="post-text">${escapeHtml(globalLang === 'en' ? textEn : textHi)}</div>
           ${mediaHtml}
           ${judgePanels(post)}
-          ${sourceLinks(post.sources)}
+          ${sourceLinks(post.sources, post.topic_url)}
         </div>
         <div class="post-actions">
           <button class="action-btn">👍 Like</button>

@@ -1,0 +1,414 @@
+Both api_key and AWS credentials were provided. Using api_key for authentication; AWS credentials will be ignored.
+Both api_key and AWS credentials were provided. Using api_key for authentication; AWS credentials will be ignored.
+Both api_key and AWS credentials were provided. Using api_key for authentication; AWS credentials will be ignored.
+Both api_key and AWS credentials were provided. Using api_key for authentication; AWS credentials will be ignored.
+Both api_key and AWS credentials were provided. Using api_key for authentication; AWS credentials will be ignored.
+Both api_key and AWS credentials were provided. Using api_key for authentication; AWS credentials will be ignored.
+Both api_key and AWS credentials were provided. Using api_key for authentication; AWS credentials will be ignored.
+Both api_key and AWS credentials were provided. Using api_key for authentication; AWS credentials will be ignored.
+Both api_key and AWS credentials were provided. Using api_key for authentication; AWS credentials will be ignored.
+Both api_key and AWS credentials were provided. Using api_key for authentication; AWS credentials will be ignored.
+Both api_key and AWS credentials were provided. Using api_key for authentication; AWS credentials will be ignored.
+Both api_key and AWS credentials were provided. Using api_key for authentication; AWS credentials will be ignored.
+Both api_key and AWS credentials were provided. Using api_key for authentication; AWS credentials will be ignored.
+Both api_key and AWS credentials were provided. Using api_key for authentication; AWS credentials will be ignored.
+Both api_key and AWS credentials were provided. Using api_key for authentication; AWS credentials will be ignored.
+Both api_key and AWS credentials were provided. Using api_key for authentication; AWS credentials will be ignored.
+Both api_key and AWS credentials were provided. Using api_key for authentication; AWS credentials will be ignored.
+Both api_key and AWS credentials were provided. Using api_key for authentication; AWS credentials will be ignored.
+Both api_key and AWS credentials were provided. Using api_key for authentication; AWS credentials will be ignored.
+Both api_key and AWS credentials were provided. Using api_key for authentication; AWS credentials will be ignored.
+Both api_key and AWS credentials were provided. Using api_key for authentication; AWS credentials will be ignored.
+Both api_key and AWS credentials were provided. Using api_key for authentication; AWS credentials will be ignored.
+INFO:     Started server process [3180]
+INFO:     Waiting for application startup.
+2026-08-09 18:21:25,825  INFO      httpx — HTTP Request: POST https://mcp.thebreeth.com/mcp "HTTP/1.1 200 OK"
+2026-08-09 18:21:25,826  INFO      mcp.client.streamable_http — Negotiated protocol version: 2025-11-25
+2026-08-09 18:21:26,552  INFO      httpx — HTTP Request: POST https://mcp.thebreeth.com/mcp "HTTP/1.1 202 Accepted"
+2026-08-09 18:21:27,330  INFO      httpx — HTTP Request: POST https://mcp.thebreeth.com/mcp "HTTP/1.1 200 OK"
+2026-08-09 18:21:27,573  INFO      mcp_client — MCP tools registered: ['add_episode', 'record_fact', 'retract', 'search_graph', 'whoami', 'list_groups', 'list_cognitive_patterns', 'edges_by_pattern', 'get_entity_view', 'get_episode', 'get_director_profile', 'get_unified_profile', 'list_episode_tasks', 'get_episode_task', 'cancel_episode_task']
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+2026-08-09 18:21:40,311  INFO      httpx — HTTP Request: POST https://mcp.thebreeth.com/mcp "HTTP/1.1 200 OK"
+2026-08-09 18:21:40,313  INFO      mcp.client.streamable_http — Negotiated protocol version: 2025-11-25
+2026-08-09 18:21:41,112  INFO      httpx — HTTP Request: POST https://mcp.thebreeth.com/mcp "HTTP/1.1 202 Accepted"
+2026-08-09 18:21:41,913  INFO      httpx — HTTP Request: POST https://mcp.thebreeth.com/mcp "HTTP/1.1 200 OK"
+2026-08-09 18:21:48,686  INFO      httpx — HTTP Request: POST https://mcp.thebreeth.com/mcp "HTTP/1.1 200 OK"
+2026-08-09 18:21:49,849  INFO      httpx — HTTP Request: POST https://mcp.thebreeth.com/mcp "HTTP/1.1 200 OK"
+2026-08-09 18:21:49,852  INFO      mcp.client.streamable_http — Negotiated protocol version: 2025-11-25
+2026-08-09 18:21:50,580  INFO      httpx — HTTP Request: POST https://mcp.thebreeth.com/mcp "HTTP/1.1 202 Accepted"
+2026-08-09 18:21:51,290  INFO      httpx — HTTP Request: POST https://mcp.thebreeth.com/mcp "HTTP/1.1 200 OK"
+2026-08-09 18:21:55,135  INFO      httpx — HTTP Request: POST https://mcp.thebreeth.com/mcp "HTTP/1.1 200 OK"
+2026-08-09 18:21:55,366  INFO      agent.graph — tick start — agent=9cfcef91-f63b-4575-afaa-69f3b8e188be tick=7dd0ea44-1c40-4407-8ea4-fc48a7a1ea97
+2026-08-09 18:21:55,371  INFO      agent.nodes.discover — discover: YouTube skipped — YOUTUBE_API_KEY not configured
+2026-08-09 18:21:55,616  INFO      agent.nodes.discover — discover: RSS https://raw.githubusercontent.com/Olshansk/rss-feeds/main/feeds/feed_anthropic_news.xml -> 5 candidates
+2026-08-09 18:21:55,872  INFO      agent.nodes.discover — discover: RSS https://openai.com/news/rss.xml -> 5 candidates
+2026-08-09 18:21:55,971  INFO      agent.nodes.discover — discover: RSS https://blogs.nvidia.com/feed/ -> 5 candidates
+2026-08-09 18:21:56,096  INFO      agent.nodes.discover — discover: RSS https://huggingface.co/blog/feed.xml -> 5 candidates
+2026-08-09 18:21:56,104  INFO      agent.nodes.discover — discover: HN query 'LLM' -> 4 candidates
+2026-08-09 18:21:56,105  INFO      agent.nodes.discover — discover: GitHub search 'LLM' -> 10 candidates
+2026-08-09 18:21:56,453  INFO      agent.nodes.discover — discover: RSS https://techcrunch.com/category/artificial-intelligence/feed/ -> 5 candidates
+2026-08-09 18:21:56,456  INFO      agent.nodes.discover — discover: Product Hunt -> 9 AI-relevant candidates (of 10 total)
+2026-08-09 18:21:56,486  INFO      agent.nodes.discover — discover: RSS http://export.arxiv.org/rss/cs.LG -> 0 candidates
+2026-08-09 18:21:56,488  INFO      agent.nodes.discover — discover: RSS http://export.arxiv.org/rss/cs.CL -> 0 candidates
+2026-08-09 18:21:56,565  INFO      agent.nodes.discover — discover: HF trending papers -> 10 candidates
+2026-08-09 18:21:56,600  INFO      agent.nodes.discover — discover: HN query 'large language model' -> 4 candidates
+2026-08-09 18:21:56,619  INFO      agent.nodes.discover — discover: GitHub search 'AI agent' -> 10 candidates
+2026-08-09 18:21:56,739  INFO      agent.nodes.discover — discover: RSS https://simonwillison.net/atom/everything/ -> 5 candidates
+2026-08-09 18:21:56,788  INFO      agent.nodes.discover — discover: RSS https://www.microsoft.com/en-us/research/feed/ -> 5 candidates
+2026-08-09 18:21:56,847  INFO      agent.nodes.discover — discover: RSS https://blog.google/technology/ai/rss -> 5 candidates
+2026-08-09 18:21:56,903  INFO      agent.nodes.discover — discover: RSS https://deepmind.google/blog/rss.xml -> 5 candidates
+2026-08-09 18:21:57,063  INFO      agent.nodes.discover — discover: HN query 'AI agent' -> 3 candidates
+2026-08-09 18:21:57,173  INFO      agent.nodes.discover — discover: GitHub search 'RAG' -> 10 candidates
+2026-08-09 18:21:57,543  INFO      agent.nodes.discover — discover: RSS https://aws.amazon.com/blogs/machine-learning/feed/ -> 5 candidates
+2026-08-09 18:21:57,544  INFO      agent.nodes.discover — discover: HN query 'open weights' -> 5 candidates
+2026-08-09 18:21:57,634  INFO      agent.nodes.discover — discover: RSS https://bair.berkeley.edu/blog/feed.xml -> 5 candidates
+2026-08-09 18:21:57,695  INFO      agent.nodes.discover — discover: GitHub search 'multimodal AI' -> 10 candidates
+2026-08-09 18:21:58,006  INFO      agent.nodes.discover — discover: HN query 'inference' -> 3 candidates
+2026-08-09 18:21:58,553  INFO      agent.nodes.discover — discover: HN query 'AI coding' -> 5 candidates
+2026-08-09 18:21:58,997  INFO      agent.nodes.discover — discover: HN query 'agentic' -> 5 candidates
+2026-08-09 18:21:59,515  INFO      agent.nodes.discover — discover: HN query 'RAG' -> 4 candidates
+2026-08-09 18:22:00,033  INFO      agent.nodes.discover — discover: HN query 'local LLM' -> 3 candidates
+2026-08-09 18:22:00,634  INFO      agent.nodes.discover — discover: HN query 'reasoning model' -> 3 candidates
+2026-08-09 18:22:00,640  INFO      agent.nodes.discover — discover: 145 total candidates after dedup (rss=55 hn=39 github=40 hf_papers=10 product_hunt=9 youtube=0)
+2026-08-09 18:22:00,644  INFO      agent.nodes.filter — filter_seen: local dedup dropped 'Responding to the next frontier of critical cyber capabiliti' — exact URL already published
+2026-08-09 18:22:00,646  INFO      agent.nodes.filter — filter_seen: local dedup dropped 'How HSP GRUPPE builds AI capabilities for tax advisory' — exact URL already published
+2026-08-09 18:22:00,646  INFO      agent.nodes.filter — filter_seen: local dedup dropped 'Improving GPT\u20115.6 Sol in ChatGPT—and expanding access to GPT' — exact URL already published
+2026-08-09 18:22:00,646  INFO      agent.nodes.filter — filter_seen: local dedup dropped 'Working with the American Psychological Association on youth' — exact URL already published
+2026-08-09 18:22:00,653  INFO      agent.nodes.filter — filter_seen: local dedup — 141/145 candidates passed (4 dropped)
+2026-08-09 18:22:27,348  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'From asking to doing: How the world is putting ChatGPT to wo' —  — passing through
+2026-08-09 18:22:27,350  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Improving Fable 5's biology safeguards' —  — passing through
+2026-08-09 18:22:27,351  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Mariano-Florentino (Tino) Cuéllar to join Anthropic as Chief' —  — passing through
+2026-08-09 18:22:27,351  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Investigating three real-world incidents in our cybersecurit' —  — passing through
+2026-08-09 18:22:27,351  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Cognizant and Anthropic expand their partnership to bring Cl' —  — passing through
+2026-08-09 18:22:27,351  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Our position on open-weights models' —  — passing through
+2026-08-09 18:22:27,351  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'The latest AI news we announced in July 2026' —  — passing through
+2026-08-09 18:22:27,352  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Inside our 353,000-person vibe coding course' —  — passing through
+2026-08-09 18:22:27,352  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Gemini API Managed Agents: 3.6 Flash, hooks, and more' —  — passing through
+2026-08-09 18:22:27,352  WARNING   agent.nodes.filter — filter_seen: search_graph error for '5 ways AI Mode in Search helps you enjoy the real world' —  — passing through
+2026-08-09 18:22:27,352  WARNING   agent.nodes.filter — filter_seen: search_graph error for '5 ways to host the ultimate dinner party with Google Search' —  — passing through
+2026-08-09 18:22:27,352  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'TutorMoments: Do AI tutors know when to help and when to hol' —  — passing through
+2026-08-09 18:22:27,353  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Baseten on Hugging Face Inference Providers \U0001f525' —  — passing through
+2026-08-09 18:22:27,353  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Deploy local agents everywhere with LFM2.5-2.6B' —  — passing through
+2026-08-09 18:22:27,353  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'GPU Management: Why Idle GPUs Are the New Grounded Aircraft' —  — passing through
+2026-08-09 18:22:27,353  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'NVIDIA Cosmos-H-Dreams: Bringing Real-Time Generative Simula' —  — passing through
+2026-08-09 18:22:27,354  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'From CUDA to MLX: How K-Search Brings Decades of Kernel Expe' —  — passing through
+2026-08-09 18:22:27,354  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Teaching LLMs to Update Beliefs for Efficient Long-Horizon I' —  — passing through
+2026-08-09 18:22:27,354  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Intelligence is Free, Now What? <br> Data Systems for, of, a' —  — passing through
+2026-08-09 18:22:27,354  WARNING   agent.nodes.filter — filter_seen: search_graph error for '2026 BAIR Graduate Showcase' —  — passing through
+2026-08-09 18:22:27,355  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Adaptive Parallel Reasoning: The Next Paradigm in Efficient ' —  — passing through
+2026-08-09 18:22:27,355  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'WeatherNext: AI model achieves breakthrough in forecasting c' —  — passing through
+2026-08-09 18:22:27,355  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Gemini Robotics ER 2: powering robotics with video understan' —  — passing through
+2026-08-09 18:22:27,356  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'We’re launching Lyria 3.5 in Google Flow Music, with advance' —  — passing through
+2026-08-09 18:22:27,356  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Gemini Robotics 2 brings whole body intelligence to robots' —  — passing through
+2026-08-09 18:22:27,356  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Accelerating the frontiers of scientific discovery: Google’s' —  — passing through
+2026-08-09 18:22:27,356  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Orchard: An open framework for scalable agentic AI' —  — passing through
+2026-08-09 18:22:27,357  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Echoverse: Deep, evolving environments for computer-use agen' —  — passing through
+2026-08-09 18:22:27,357  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'EvoLib: Turning experience into evolving knowledge' —  — passing through
+2026-08-09 18:22:27,357  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Verifying Rust cryptography in SymCrypt, from standards to c' —  — passing through
+2026-08-09 18:22:27,357  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Aurora 1.5: Extending open foundation models for weather and' —  — passing through
+2026-08-09 18:22:27,358  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Auto mode is now the default in Claude Code for Pro, Max, an' —  — passing through
+2026-08-09 18:22:27,358  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Now we have a timeline of the OpenAI accidental attack again' —  — passing through
+2026-08-09 18:22:27,358  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Quoting John Gruber' —  — passing through
+2026-08-09 18:22:27,358  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Now we have a timeline of the OpenAI accidental attack again' —  — passing through
+2026-08-09 18:22:27,358  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Moonlight & Mayhem (Raccoon Heist by Codex + GPT-5.6 Sol Ult' —  — passing through
+2026-08-09 18:22:27,360  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Planned Amazon data center could become the biggest climate ' —  — passing through
+2026-08-09 18:22:27,360  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'OpenAI acquires presentation startup NextSlide' —  — passing through
+2026-08-09 18:22:27,360  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'OpenAI says it slowed Astra model development over security ' —  — passing through
+2026-08-09 18:22:27,360  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'After Rippling blew millions on AI in months, it built an em' —  — passing through
+2026-08-09 18:22:27,360  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Cloudflare launches Kitesurf, a browser built for AI agents' —  — passing through
+2026-08-09 18:22:27,361  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'How Cohere Health digitizes clinical policies using Amazon B' —  — passing through
+2026-08-09 18:22:27,361  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'How TReNDS automates root-cause analysis with Amazon Bedrock' —  — passing through
+2026-08-09 18:22:27,362  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Determining playoff clinching scenarios in the NHL using con' —  — passing through
+2026-08-09 18:22:27,362  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Securing AI agents with temporal policies in Amazon Bedrock ' —  — passing through
+2026-08-09 18:22:27,362  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Configure rate limits for AI traffic on AgentCore gateway' —  — passing through
+2026-08-09 18:22:27,362  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Firebird Launches CIS Region’s Largest AI Factory in Armenia' —  — passing through
+2026-08-09 18:22:27,362  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'GeForce NOW Shakes Up August With 26 New Games' —  — passing through
+2026-08-09 18:22:27,362  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Into the Omniverse: How Open World Models Push the Frontier ' —  — passing through
+2026-08-09 18:22:27,362  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'NVIDIA and Partners Build in America, for America' —  — passing through
+2026-08-09 18:22:27,363  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'NVIDIA Joins NSF State and Regional AI Hubs Program to Expan' —  — passing through
+2026-08-09 18:22:27,363  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Show HN: FAIth – a syntax-free JVM language, compiled by an ' —  — passing through
+2026-08-09 18:22:27,363  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Self Hosting Coding LLMs' —  — passing through
+2026-08-09 18:22:27,363  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'What LLMs Should Do' —  — passing through
+2026-08-09 18:22:27,363  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Show HN: HN Hiring – Search and Filter Who Is Hiring' —  — passing through
+2026-08-09 18:22:27,364  WARNING   agent.nodes.filter — filter_seen: search_graph error for '1mongpt: A large language model, except it's one guy' —  — passing through
+2026-08-09 18:22:27,364  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Pivotal role of reinforcement learning in modern large langu' —  — passing through
+2026-08-09 18:22:27,364  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Why Large Language Models Fail at Tabular Prediction' —  — passing through
+2026-08-09 18:22:27,364  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Large language models can predict the results of social scie' —  — passing through
+2026-08-09 18:22:27,364  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'China created a system that simulates the Earth with billion' —  — passing through
+2026-08-09 18:22:27,365  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Swarm-forge: A simple tool for coordinating several AI agent' —  — passing through
+2026-08-09 18:22:27,365  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Time has started serving ads to AI agents' —  — passing through
+2026-08-09 18:22:27,365  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Open-Weight LLMs Have Caught Up on Accuracy' —  — passing through
+2026-08-09 18:22:27,365  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'How to fine-tune open weights models' —  — passing through
+2026-08-09 18:22:27,366  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Open Questions on Open Weights' —  — passing through
+2026-08-09 18:22:27,366  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Show HN: A terminal glued to the macOS dock' —  — passing through
+2026-08-09 18:22:27,366  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'The Waste Inference Engine' —  — passing through
+2026-08-09 18:22:27,366  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Show HN: A probabilistic programming language with exact inf' —  — passing through
+2026-08-09 18:22:27,366  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Cross platform, portable and CPU accelerated AI inference wi' —  — passing through
+2026-08-09 18:22:27,367  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Show HN: Qwen3.8-Max – Use Qwen Studio and MCP to Code Local' —  — passing through
+2026-08-09 18:22:27,367  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Teaching Coding When AI Can Write the Code' —  — passing through
+2026-08-09 18:22:27,367  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'AMD Instinct Coder Puts 8 MI325X GPUs Behind Local AI Coding' —  — passing through
+2026-08-09 18:22:27,367  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Show HN: Tape Music Hub, local music library manager with a ' —  — passing through
+2026-08-09 18:22:27,367  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Show HN: Zaivern Code – a Rust cockpit for parallel AI codin' —  — passing through
+2026-08-09 18:22:27,368  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Show HN: OneRingAI v1 – TypeScript agents with integrations ' —  — passing through
+2026-08-09 18:22:27,368  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Show HN: Pier – Give every agent session its own cloud VM, o' —  — passing through
+2026-08-09 18:22:27,368  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'A golf career SIM I built, abandoned, and just found still h' —  — passing through
+2026-08-09 18:22:27,368  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Show HN: Otaku – A Roleplay Terminal Client' —  — passing through
+2026-08-09 18:22:27,368  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Show HN: Salestrics – An open MCP server and CRM for AI-nati' —  — passing through
+2026-08-09 18:22:27,370  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Show HN: Benchmark local LLMs fit for your device specs' —  — passing through
+2026-08-09 18:22:27,370  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Show HN: DeepSeek-V4 Latent Reasoning – moving "thinking" in' —  — passing through
+2026-08-09 18:22:27,370  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Show HN: Lefts – a domain specific language for building cre' —  — passing through
+2026-08-09 18:22:27,370  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'FareedKhan-dev/kimi-k3-in-c' —  — passing through
+2026-08-09 18:22:27,370  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Pan-Chera/Multi-Agent-CAD' —  — passing through
+2026-08-09 18:22:27,371  WARNING   agent.nodes.filter — filter_seen: search_graph error for '0xwilliamortiz/ratchet' —  — passing through
+2026-08-09 18:22:27,371  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'aigclink/geolook' —  — passing through
+2026-08-09 18:22:27,371  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Anionex/agent-vision-toolkit' —  — passing through
+2026-08-09 18:22:27,371  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'patchy631/time-to-first-token' —  — passing through
+2026-08-09 18:22:27,372  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'alikon-art/DeterminFlow' —  — passing through
+2026-08-09 18:22:27,372  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'KimGLee/Cambium' —  — passing through
+2026-08-09 18:22:27,372  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'hardrave/NIGHTRUN' —  — passing through
+2026-08-09 18:22:27,372  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'arcships/aimux' —  — passing through
+2026-08-09 18:22:27,372  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'trycompai/crm' —  — passing through
+2026-08-09 18:22:27,373  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'QwenAudio/qwen-audio-agent' —  — passing through
+2026-08-09 18:22:27,373  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Binaryify/open-kimi-ppt-skill' —  — passing through
+2026-08-09 18:22:27,373  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'petergyang/human-review' —  — passing through
+2026-08-09 18:22:27,373  WARNING   agent.nodes.filter — filter_seen: search_graph error for '0xwilliamortiz/ponytail-improved' —  — passing through
+2026-08-09 18:22:27,373  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'AMAP-ML/LongHorizon-Harness' —  — passing through
+2026-08-09 18:22:27,374  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'aws/context-ontology-accelerator' —  — passing through
+2026-08-09 18:22:27,374  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'criptogus/HermesOffice' —  — passing through
+2026-08-09 18:22:27,374  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'eternityspring/shuohao-skills' —  — passing through
+2026-08-09 18:22:27,374  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'uczltw6/trace-file-lineage' —  — passing through
+2026-08-09 18:22:27,374  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'benchen4395/alpha_agentic_search' —  — passing through
+2026-08-09 18:22:27,374  WARNING   agent.nodes.filter — filter_seen: search_graph error for '888newstep/ai-agent-platform' —  — passing through
+2026-08-09 18:22:27,375  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Funluned/vetresearch-workbench' —  — passing through
+2026-08-09 18:22:27,375  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Foamtor/AgentBridge' —  — passing through
+2026-08-09 18:22:27,375  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'lss100200/omnibase' —  — passing through
+2026-08-09 18:22:27,375  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'yu123-tqy/equipdoc-agent' —  — passing through
+2026-08-09 18:22:27,375  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'TOPDEV99999/AI-Knowledge-Management-Platform' —  — passing through
+2026-08-09 18:22:27,375  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'bybit-exchange/kaas' —  — passing through
+2026-08-09 18:22:27,376  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Awesome-AI-Pedia/Awesome-AI-Pedia' —  — passing through
+2026-08-09 18:22:27,376  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'h4444433333/net-deep-research' —  — passing through
+2026-08-09 18:22:27,376  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'magicrew/doc7' —  — passing through
+2026-08-09 18:22:27,376  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'isaacjamescjf1869/apex-copilot-project-hub' —  — passing through
+2026-08-09 18:22:27,376  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'RamiJaloudi/ai-radiology-workbench' —  — passing through
+2026-08-09 18:22:27,376  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'alphaparkinc/genpark-multimodal-ai-receptionist-call-agent-s' —  — passing through
+2026-08-09 18:22:27,377  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'alphaparkinc/genpark-ai-video-multimodal-motion-brush-animat' —  — passing through
+2026-08-09 18:22:27,377  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'alphaparkinc/genpark-voice-ai-conversational-agent-scaler-sk' —  — passing through
+2026-08-09 18:22:27,377  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'zouyuanqing/vision-primitives-mcp' —  — passing through
+2026-08-09 18:22:27,377  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'lamhotsiagian/multimodal-system-design' —  — passing through
+2026-08-09 18:22:27,377  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'LINoone516/lino-agent-skills' —  — passing through
+2026-08-09 18:22:27,378  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'BraveAnn011/ai-halo-valuation-bias' —  — passing through
+2026-08-09 18:22:27,378  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'TradingAgents: Multi-Agents LLM Financial Trading Framework' —  — passing through
+2026-08-09 18:22:27,378  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Unlimited OCR Works' —  — passing through
+2026-08-09 18:22:27,378  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'JoyAI-Video-Edit: Real-Time Open-Ended Video Editing with Au' —  — passing through
+2026-08-09 18:22:27,378  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Kimi K3: Open Frontier Intelligence' —  — passing through
+2026-08-09 18:22:27,378  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'LongHorizon-Harness: Advancing Long-Horizon Agents for Real-' —  — passing through
+2026-08-09 18:22:27,379  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'OpenDevin: An Open Platform for AI Software Developers as Ge' —  — passing through
+2026-08-09 18:22:27,379  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Efficient Memory Management for Large Language Model Serving' —  — passing through
+2026-08-09 18:22:27,379  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'MinerU2.5: A Decoupled Vision-Language Model for Efficient
+ ' —  — passing through
+2026-08-09 18:22:27,379  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Kronos: A Foundation Model for the Language of Financial Mar' —  — passing through
+2026-08-09 18:22:27,380  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'VibeVoice Technical Report' —  — passing through
+2026-08-09 18:22:27,380  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Pazi' —  — passing through
+2026-08-09 18:22:27,380  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Fuzzy AI' —  — passing through
+2026-08-09 18:22:27,380  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Prelint' —  — passing through
+2026-08-09 18:22:27,380  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Unabyss for Claude' —  — passing through
+2026-08-09 18:22:27,381  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'SKI' —  — passing through
+2026-08-09 18:22:27,381  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Velo 3.0' —  — passing through
+2026-08-09 18:22:27,381  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Sim' —  — passing through
+2026-08-09 18:22:27,381  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Prefactor' —  — passing through
+2026-08-09 18:22:27,381  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Lev8' —  — passing through
+2026-08-09 18:22:27,382  INFO      agent.nodes.filter — filter_seen: 141/145 candidates passed (after local + breeth)
+2026-08-09 18:22:27,475  INFO      langchain_aws.llms.bedrock — Using Bedrock Invoke API to generate response
+2026-08-09 18:23:13,981  INFO      langchain_aws.llms.bedrock — Using Bedrock Invoke API to generate response
+2026-08-09 18:23:17,303  INFO      agent.nodes.meme_opportunity — meme_opportunity_node: topic='From asking to doing: How the world is putting ChatGPT to wo' is_meme_worthy=True confidence=0.70 -> content_type=meme_post
+2026-08-09 18:23:17,306  INFO      langchain_aws.llms.bedrock — Using Bedrock Invoke API to generate response
+2026-08-09 18:23:20,364  INFO      meme.engine — meme.engine: NO MEME — The topic is informative and doesn't contain any inherently funny or absurd elements. However, there's a potential for humor through understating the unexpected applications of ChatGPT or misdirecting the audience's expectations about what ChatGPT is being used for.
+2026-08-09 18:23:20,366  INFO      agent.nodes.meme_generate — meme_generate_node: degrading to text_post — The topic is informative and doesn't contain any inherently funny or absurd elements. However, there's a potential for humor through understating the unexpected applications of ChatGPT or misdirecting the audience's expectations about what ChatGPT is being used for.
+2026-08-09 18:23:20,368  INFO      langchain_aws.llms.bedrock — Using Bedrock Invoke API to generate response
+2026-08-09 18:23:20,368  INFO      langchain_aws.llms.bedrock — Using Bedrock Invoke API to generate response
+2026-08-09 18:23:32,437  WARNING   agent.nodes.post — write_post: draft attempt 1/2 has structural violations — no first-person voice (I/we/my/our) in the first third of the post — reads like a third-person news recap
+2026-08-09 18:23:32,440  INFO      langchain_aws.llms.bedrock — Using Bedrock Invoke API to generate response
+2026-08-09 18:23:40,969  WARNING   agent.nodes.post — write_post: draft attempt 2/2 has structural violations — no first-person voice (I/we/my/our) in the first third of the post — reads like a third-person news recap
+2026-08-09 18:23:40,971  WARNING   agent.nodes.post — write_post: draft still has violations after 2 attempts, publishing anyway — no first-person voice (I/we/my/our) in the first third of the post — reads like a third-person news recap
+2026-08-09 18:23:40,974  INFO      langchain_aws.llms.bedrock — Using Bedrock Invoke API to generate response
+2026-08-09 18:23:45,546  INFO      httpx — HTTP Request: POST https://mcp.thebreeth.com/mcp "HTTP/1.1 200 OK"
+2026-08-09 18:23:45,549  INFO      mcp.client.streamable_http — Negotiated protocol version: 2025-11-25
+2026-08-09 18:23:46,351  INFO      httpx — HTTP Request: POST https://mcp.thebreeth.com/mcp "HTTP/1.1 202 Accepted"
+2026-08-09 18:23:47,161  INFO      httpx — HTTP Request: POST https://mcp.thebreeth.com/mcp "HTTP/1.1 200 OK"
+2026-08-09 18:23:48,196  INFO      httpx — HTTP Request: POST https://mcp.thebreeth.com/mcp "HTTP/1.1 200 OK"
+2026-08-09 18:23:48,201  INFO      mcp.client.streamable_http — Negotiated protocol version: 2025-11-25
+2026-08-09 18:23:49,022  INFO      httpx — HTTP Request: POST https://mcp.thebreeth.com/mcp "HTTP/1.1 202 Accepted"
+2026-08-09 18:23:50,046  INFO      httpx — HTTP Request: POST https://mcp.thebreeth.com/mcp "HTTP/1.1 200 OK"
+2026-08-09 18:24:01,108  INFO      httpx — HTTP Request: POST https://mcp.thebreeth.com/mcp "HTTP/1.1 200 OK"
+2026-08-09 18:24:01,112  INFO      agent.nodes.persist — persist: post 12 saved (text_post)
+2026-08-09 18:24:01,113  INFO      agent.graph — tick complete — agent=9cfcef91-f63b-4575-afaa-69f3b8e188be tick=7dd0ea44-1c40-4407-8ea4-fc48a7a1ea97
+2026-08-09 18:34:50,043  INFO      httpx — HTTP Request: POST https://mcp.thebreeth.com/mcp "HTTP/1.1 200 OK"
+2026-08-09 18:34:50,046  INFO      mcp.client.streamable_http — Negotiated protocol version: 2025-11-25
+2026-08-09 18:34:51,003  INFO      httpx — HTTP Request: POST https://mcp.thebreeth.com/mcp "HTTP/1.1 202 Accepted"
+2026-08-09 18:34:51,808  INFO      httpx — HTTP Request: POST https://mcp.thebreeth.com/mcp "HTTP/1.1 200 OK"
+2026-08-09 18:34:53,099  INFO      httpx — HTTP Request: POST https://mcp.thebreeth.com/mcp "HTTP/1.1 200 OK"
+2026-08-09 18:34:54,199  INFO      httpx — HTTP Request: POST https://mcp.thebreeth.com/mcp "HTTP/1.1 200 OK"
+2026-08-09 18:34:54,202  INFO      mcp.client.streamable_http — Negotiated protocol version: 2025-11-25
+2026-08-09 18:34:55,157  INFO      httpx — HTTP Request: POST https://mcp.thebreeth.com/mcp "HTTP/1.1 202 Accepted"
+2026-08-09 18:34:56,116  INFO      httpx — HTTP Request: POST https://mcp.thebreeth.com/mcp "HTTP/1.1 200 OK"
+2026-08-09 18:34:59,180  INFO      httpx — HTTP Request: POST https://mcp.thebreeth.com/mcp "HTTP/1.1 200 OK"
+2026-08-09 18:34:59,492  INFO      agent.graph — tick start — agent=9cfcef91-f63b-4575-afaa-69f3b8e188be tick=1fe3121e-f836-4a3b-aa94-a705cdaaca91
+2026-08-09 18:34:59,495  INFO      agent.nodes.discover — discover: YouTube skipped — YOUTUBE_API_KEY not configured
+2026-08-09 18:34:59,646  INFO      agent.nodes.discover — discover: RSS https://raw.githubusercontent.com/Olshansk/rss-feeds/main/feeds/feed_anthropic_news.xml -> 5 candidates
+2026-08-09 18:34:59,686  WARNING   agent.nodes.discover — discover: GitHub search rate-limited (403) — skipping remaining terms
+2026-08-09 18:34:59,730  INFO      agent.nodes.discover — discover: RSS https://techcrunch.com/category/artificial-intelligence/feed/ -> 5 candidates
+2026-08-09 18:34:59,803  INFO      agent.nodes.discover — discover: RSS http://export.arxiv.org/rss/cs.LG -> 0 candidates
+2026-08-09 18:35:00,065  INFO      agent.nodes.discover — discover: RSS https://openai.com/news/rss.xml -> 5 candidates
+2026-08-09 18:35:00,196  INFO      agent.nodes.discover — discover: RSS https://huggingface.co/blog/feed.xml -> 5 candidates
+2026-08-09 18:35:00,300  INFO      agent.nodes.discover — discover: RSS https://blogs.nvidia.com/feed/ -> 5 candidates
+2026-08-09 18:35:00,302  INFO      agent.nodes.discover — discover: RSS http://export.arxiv.org/rss/cs.CL -> 0 candidates
+2026-08-09 18:35:00,307  INFO      agent.nodes.discover — discover: HN query 'LLM' -> 4 candidates
+2026-08-09 18:35:00,385  INFO      agent.nodes.discover — discover: RSS https://simonwillison.net/atom/everything/ -> 5 candidates
+2026-08-09 18:35:00,410  INFO      agent.nodes.discover — discover: HF trending papers -> 10 candidates
+2026-08-09 18:35:00,767  INFO      agent.nodes.discover — discover: HN query 'large language model' -> 4 candidates
+2026-08-09 18:35:00,807  INFO      agent.nodes.discover — discover: RSS https://deepmind.google/blog/rss.xml -> 5 candidates
+2026-08-09 18:35:00,934  INFO      agent.nodes.discover — discover: Product Hunt -> 9 AI-relevant candidates (of 10 total)
+2026-08-09 18:35:01,002  INFO      agent.nodes.discover — discover: RSS https://www.microsoft.com/en-us/research/feed/ -> 5 candidates
+2026-08-09 18:35:01,021  INFO      agent.nodes.discover — discover: RSS https://blog.google/technology/ai/rss -> 5 candidates
+2026-08-09 18:35:01,244  INFO      agent.nodes.discover — discover: HN query 'AI agent' -> 3 candidates
+2026-08-09 18:35:01,386  INFO      agent.nodes.discover — discover: RSS https://bair.berkeley.edu/blog/feed.xml -> 5 candidates
+2026-08-09 18:35:01,712  INFO      agent.nodes.discover — discover: RSS https://aws.amazon.com/blogs/machine-learning/feed/ -> 5 candidates
+2026-08-09 18:35:01,716  INFO      agent.nodes.discover — discover: HN query 'open weights' -> 5 candidates
+2026-08-09 18:35:02,207  INFO      agent.nodes.discover — discover: HN query 'inference' -> 3 candidates
+2026-08-09 18:35:02,848  INFO      agent.nodes.discover — discover: HN query 'AI coding' -> 5 candidates
+2026-08-09 18:35:03,315  INFO      agent.nodes.discover — discover: HN query 'agentic' -> 5 candidates
+2026-08-09 18:35:03,792  INFO      agent.nodes.discover — discover: HN query 'RAG' -> 5 candidates
+2026-08-09 18:35:04,292  INFO      agent.nodes.discover — discover: HN query 'local LLM' -> 3 candidates
+2026-08-09 18:35:04,766  INFO      agent.nodes.discover — discover: HN query 'reasoning model' -> 3 candidates
+2026-08-09 18:35:04,771  INFO      agent.nodes.discover — discover: 106 total candidates after dedup (rss=55 hn=40 github=0 hf_papers=10 product_hunt=9 youtube=0)
+2026-08-09 18:35:04,773  INFO      agent.nodes.filter — filter_seen: local dedup dropped 'Responding to the next frontier of critical cyber capabiliti' — exact URL already published
+2026-08-09 18:35:04,773  INFO      agent.nodes.filter — filter_seen: local dedup dropped 'How HSP GRUPPE builds AI capabilities for tax advisory' — exact URL already published
+2026-08-09 18:35:04,774  INFO      agent.nodes.filter — filter_seen: local dedup dropped 'Improving GPT\u20115.6 Sol in ChatGPT—and expanding access to GPT' — exact URL already published
+2026-08-09 18:35:04,774  INFO      agent.nodes.filter — filter_seen: local dedup dropped 'Working with the American Psychological Association on youth' — exact URL already published
+2026-08-09 18:35:04,774  INFO      agent.nodes.filter — filter_seen: local dedup dropped 'From asking to doing: How the world is putting ChatGPT to wo' — exact URL already published
+2026-08-09 18:35:04,780  INFO      agent.nodes.filter — filter_seen: local dedup — 101/106 candidates passed (5 dropped)
+2026-08-09 18:35:24,522  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Improving Fable 5's biology safeguards' —  — passing through
+2026-08-09 18:35:24,523  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Mariano-Florentino (Tino) Cuéllar to join Anthropic as Chief' —  — passing through
+2026-08-09 18:35:24,524  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Investigating three real-world incidents in our cybersecurit' —  — passing through
+2026-08-09 18:35:24,524  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Cognizant and Anthropic expand their partnership to bring Cl' —  — passing through
+2026-08-09 18:35:24,524  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Our position on open-weights models' —  — passing through
+2026-08-09 18:35:24,525  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'The latest AI news we announced in July 2026' —  — passing through
+2026-08-09 18:35:24,525  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Inside our 353,000-person vibe coding course' —  — passing through
+2026-08-09 18:35:24,525  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Gemini API Managed Agents: 3.6 Flash, hooks, and more' —  — passing through
+2026-08-09 18:35:24,525  WARNING   agent.nodes.filter — filter_seen: search_graph error for '5 ways AI Mode in Search helps you enjoy the real world' —  — passing through
+2026-08-09 18:35:24,526  WARNING   agent.nodes.filter — filter_seen: search_graph error for '5 ways to host the ultimate dinner party with Google Search' —  — passing through
+2026-08-09 18:35:24,526  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'TutorMoments: Do AI tutors know when to help and when to hol' —  — passing through
+2026-08-09 18:35:24,526  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Baseten on Hugging Face Inference Providers \U0001f525' —  — passing through
+2026-08-09 18:35:24,527  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Deploy local agents everywhere with LFM2.5-2.6B' —  — passing through
+2026-08-09 18:35:24,527  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'GPU Management: Why Idle GPUs Are the New Grounded Aircraft' —  — passing through
+2026-08-09 18:35:24,527  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'NVIDIA Cosmos-H-Dreams: Bringing Real-Time Generative Simula' —  — passing through
+2026-08-09 18:35:24,528  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'From CUDA to MLX: How K-Search Brings Decades of Kernel Expe' —  — passing through
+2026-08-09 18:35:24,528  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Teaching LLMs to Update Beliefs for Efficient Long-Horizon I' —  — passing through
+2026-08-09 18:35:24,528  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Intelligence is Free, Now What? <br> Data Systems for, of, a' —  — passing through
+2026-08-09 18:35:24,529  WARNING   agent.nodes.filter — filter_seen: search_graph error for '2026 BAIR Graduate Showcase' —  — passing through
+2026-08-09 18:35:24,529  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Adaptive Parallel Reasoning: The Next Paradigm in Efficient ' —  — passing through
+2026-08-09 18:35:24,529  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'WeatherNext: AI model achieves breakthrough in forecasting c' —  — passing through
+2026-08-09 18:35:24,530  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Gemini Robotics ER 2: powering robotics with video understan' —  — passing through
+2026-08-09 18:35:24,530  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'We’re launching Lyria 3.5 in Google Flow Music, with advance' —  — passing through
+2026-08-09 18:35:24,530  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Gemini Robotics 2 brings whole body intelligence to robots' —  — passing through
+2026-08-09 18:35:24,531  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Accelerating the frontiers of scientific discovery: Google’s' —  — passing through
+2026-08-09 18:35:24,531  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Orchard: An open framework for scalable agentic AI' —  — passing through
+2026-08-09 18:35:24,531  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Echoverse: Deep, evolving environments for computer-use agen' —  — passing through
+2026-08-09 18:35:24,532  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'EvoLib: Turning experience into evolving knowledge' —  — passing through
+2026-08-09 18:35:24,532  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Verifying Rust cryptography in SymCrypt, from standards to c' —  — passing through
+2026-08-09 18:35:24,532  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Aurora 1.5: Extending open foundation models for weather and' —  — passing through
+2026-08-09 18:35:24,533  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Auto mode is now the default in Claude Code for Pro, Max, an' —  — passing through
+2026-08-09 18:35:24,533  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Now we have a timeline of the OpenAI accidental attack again' —  — passing through
+2026-08-09 18:35:24,534  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Quoting John Gruber' —  — passing through
+2026-08-09 18:35:24,535  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Now we have a timeline of the OpenAI accidental attack again' —  — passing through
+2026-08-09 18:35:24,535  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Moonlight & Mayhem (Raccoon Heist by Codex + GPT-5.6 Sol Ult' —  — passing through
+2026-08-09 18:35:24,535  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Planned Amazon data center could become the biggest climate ' —  — passing through
+2026-08-09 18:35:24,536  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'OpenAI acquires presentation startup NextSlide' —  — passing through
+2026-08-09 18:35:24,536  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'OpenAI says it slowed Astra model development over security ' —  — passing through
+2026-08-09 18:35:24,536  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'After Rippling blew millions on AI in months, it built an em' —  — passing through
+2026-08-09 18:35:24,537  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Cloudflare launches Kitesurf, a browser built for AI agents' —  — passing through
+2026-08-09 18:35:24,537  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'How Cohere Health digitizes clinical policies using Amazon B' —  — passing through
+2026-08-09 18:35:24,537  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'How TReNDS automates root-cause analysis with Amazon Bedrock' —  — passing through
+2026-08-09 18:35:24,538  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Determining playoff clinching scenarios in the NHL using con' —  — passing through
+2026-08-09 18:35:24,538  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Securing AI agents with temporal policies in Amazon Bedrock ' —  — passing through
+2026-08-09 18:35:24,538  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Configure rate limits for AI traffic on AgentCore gateway' —  — passing through
+2026-08-09 18:35:24,538  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Firebird Launches CIS Region’s Largest AI Factory in Armenia' —  — passing through
+2026-08-09 18:35:24,539  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'GeForce NOW Shakes Up August With 26 New Games' —  — passing through
+2026-08-09 18:35:24,539  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Into the Omniverse: How Open World Models Push the Frontier ' —  — passing through
+2026-08-09 18:35:24,539  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'NVIDIA and Partners Build in America, for America' —  — passing through
+2026-08-09 18:35:24,540  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'NVIDIA Joins NSF State and Regional AI Hubs Program to Expan' —  — passing through
+2026-08-09 18:35:24,540  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Show HN: FAIth – a syntax-free JVM language, compiled by an ' —  — passing through
+2026-08-09 18:35:24,540  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Self Hosting Coding LLMs' —  — passing through
+2026-08-09 18:35:24,541  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'What LLMs Should Do' —  — passing through
+2026-08-09 18:35:24,541  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Show HN: HN Hiring – Search and Filter Who Is Hiring' —  — passing through
+2026-08-09 18:35:24,541  WARNING   agent.nodes.filter — filter_seen: search_graph error for '1mongpt: A large language model, except it's one guy' —  — passing through
+2026-08-09 18:35:24,541  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Pivotal role of reinforcement learning in modern large langu' —  — passing through
+2026-08-09 18:35:24,542  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Why Large Language Models Fail at Tabular Prediction' —  — passing through
+2026-08-09 18:35:24,542  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Large language models can predict the results of social scie' —  — passing through
+2026-08-09 18:35:24,542  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'China created a system that simulates the Earth with billion' —  — passing through
+2026-08-09 18:35:24,542  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Swarm-forge: A simple tool for coordinating several AI agent' —  — passing through
+2026-08-09 18:35:24,543  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Time has started serving ads to AI agents' —  — passing through
+2026-08-09 18:35:24,543  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Open-Weight LLMs Have Caught Up on Accuracy' —  — passing through
+2026-08-09 18:35:24,544  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'How to fine-tune open weights models' —  — passing through
+2026-08-09 18:35:24,544  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Open Questions on Open Weights' —  — passing through
+2026-08-09 18:35:24,544  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Show HN: A terminal glued to the macOS dock' —  — passing through
+2026-08-09 18:35:24,544  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'The Waste Inference Engine' —  — passing through
+2026-08-09 18:35:24,544  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Show HN: A probabilistic programming language with exact inf' —  — passing through
+2026-08-09 18:35:24,545  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Cross platform, portable and CPU accelerated AI inference wi' —  — passing through
+2026-08-09 18:35:24,545  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Show HN: Qwen3.8-Max – Use Qwen Studio and MCP to Code Local' —  — passing through
+2026-08-09 18:35:24,545  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Teaching Coding When AI Can Write the Code' —  — passing through
+2026-08-09 18:35:24,545  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'AMD Instinct Coder Puts 8 MI325X GPUs Behind Local AI Coding' —  — passing through
+2026-08-09 18:35:24,546  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Show HN: Tape Music Hub, local music library manager with a ' —  — passing through
+2026-08-09 18:35:24,546  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Show HN: Zaivern Code – a Rust cockpit for parallel AI codin' —  — passing through
+2026-08-09 18:35:24,546  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Show HN: OneRingAI v1 – TypeScript agents with integrations ' —  — passing through
+2026-08-09 18:35:24,547  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Show HN: Pier – Give every agent session its own cloud VM, o' —  — passing through
+2026-08-09 18:35:24,547  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Israeli startup was linked to rogue AI hacks at OpenAI, Anth' —  — passing through
+2026-08-09 18:35:24,547  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'A golf career SIM I built, abandoned, and just found still h' —  — passing through
+2026-08-09 18:35:24,547  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Show HN: Otaku – A Roleplay Terminal Client' —  — passing through
+2026-08-09 18:35:24,548  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Show HN: Salestrics – An open MCP server and CRM for AI-nati' —  — passing through
+2026-08-09 18:35:24,548  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Show HN: Benchmark local LLMs fit for your device specs' —  — passing through
+2026-08-09 18:35:24,548  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Show HN: DeepSeek-V4 Latent Reasoning – moving "thinking" in' —  — passing through
+2026-08-09 18:35:24,549  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Show HN: Lefts – a domain specific language for building cre' —  — passing through
+2026-08-09 18:35:24,549  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'TradingAgents: Multi-Agents LLM Financial Trading Framework' —  — passing through
+2026-08-09 18:35:24,549  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Unlimited OCR Works' —  — passing through
+2026-08-09 18:35:24,549  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'JoyAI-Video-Edit: Real-Time Open-Ended Video Editing with Au' —  — passing through
+2026-08-09 18:35:24,550  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Kimi K3: Open Frontier Intelligence' —  — passing through
+2026-08-09 18:35:24,550  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'LongHorizon-Harness: Advancing Long-Horizon Agents for Real-' —  — passing through
+2026-08-09 18:35:24,550  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'OpenDevin: An Open Platform for AI Software Developers as Ge' —  — passing through
+2026-08-09 18:35:24,550  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Efficient Memory Management for Large Language Model Serving' —  — passing through
+2026-08-09 18:35:24,550  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'MinerU2.5: A Decoupled Vision-Language Model for Efficient
+ ' —  — passing through
+2026-08-09 18:35:24,551  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Kronos: A Foundation Model for the Language of Financial Mar' —  — passing through
+2026-08-09 18:35:24,551  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'VibeVoice Technical Report' —  — passing through
+2026-08-09 18:35:24,551  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Pazi' —  — passing through
+2026-08-09 18:35:24,552  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Fuzzy AI' —  — passing through
+2026-08-09 18:35:24,552  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Prelint' —  — passing through
+2026-08-09 18:35:24,552  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Unabyss for Claude' —  — passing through
+2026-08-09 18:35:24,552  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Sim' —  — passing through
+2026-08-09 18:35:24,553  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Velo 3.0' —  — passing through
+2026-08-09 18:35:24,553  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'SKI' —  — passing through
+2026-08-09 18:35:24,553  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Prefactor' —  — passing through
+2026-08-09 18:35:24,553  WARNING   agent.nodes.filter — filter_seen: search_graph error for 'Lev8' —  — passing through
+2026-08-09 18:35:24,554  INFO      agent.nodes.filter — filter_seen: 101/106 candidates passed (after local + breeth)
+2026-08-09 18:35:24,556  INFO      langchain_aws.llms.bedrock — Using Bedrock Invoke API to generate response
+2026-08-09 18:35:50,075  INFO      langchain_aws.llms.bedrock — Using Bedrock Invoke API to generate response
+2026-08-09 18:35:52,753  INFO      agent.nodes.meme_opportunity — meme_opportunity_node: topic='Improving Fable 5's biology safeguards' is_meme_worthy=False confidence=0.10 -> content_type=text_post
+2026-08-09 18:35:52,831  INFO      langchain_aws.llms.bedrock — Using Bedrock Invoke API to generate response
+2026-08-09 18:35:52,832  INFO      langchain_aws.llms.bedrock — Using Bedrock Invoke API to generate response
+2026-08-09 18:35:59,045  WARNING   agent.nodes.post — write_post: draft attempt 1/2 has structural violations — no first-person voice (I/we/my/our) in the first third of the post — reads like a third-person news recap
+2026-08-09 18:35:59,048  INFO      langchain_aws.llms.bedrock — Using Bedrock Invoke API to generate response
+2026-08-09 18:36:04,585  WARNING   agent.nodes.post — write_post: draft attempt 2/2 has structural violations — no first-person voice (I/we/my/our) in the first third of the post — reads like a third-person news recap
+2026-08-09 18:36:04,587  WARNING   agent.nodes.post — write_post: draft still has violations after 2 attempts, publishing anyway — no first-person voice (I/we/my/our) in the first third of the post — reads like a third-person news recap
+2026-08-09 18:36:04,588  INFO      langchain_aws.llms.bedrock — Using Bedrock Invoke API to generate response
+2026-08-09 18:36:08,784  INFO      httpx — HTTP Request: POST https://mcp.thebreeth.com/mcp "HTTP/1.1 200 OK"
+2026-08-09 18:36:08,786  INFO      mcp.client.streamable_http — Negotiated protocol version: 2025-11-25
+2026-08-09 18:36:09,464  INFO      httpx — HTTP Request: POST https://mcp.thebreeth.com/mcp "HTTP/1.1 202 Accepted"
+2026-08-09 18:36:11,268  INFO      httpx — HTTP Request: POST https://mcp.thebreeth.com/mcp "HTTP/1.1 200 OK"
+2026-08-09 18:36:12,134  INFO      httpx — HTTP Request: POST https://mcp.thebreeth.com/mcp "HTTP/1.1 200 OK"
+2026-08-09 18:36:12,134  INFO      mcp.client.streamable_http — Negotiated protocol version: 2025-11-25
+2026-08-09 18:36:12,943  INFO      httpx — HTTP Request: POST https://mcp.thebreeth.com/mcp "HTTP/1.1 202 Accepted"
+2026-08-09 18:36:13,745  INFO      httpx — HTTP Request: POST https://mcp.thebreeth.com/mcp "HTTP/1.1 200 OK"
+2026-08-09 18:36:17,221  INFO      httpx — HTTP Request: POST https://mcp.thebreeth.com/mcp "HTTP/1.1 200 OK"
+2026-08-09 18:36:17,450  INFO      agent.nodes.persist — persist: post 13 saved (text_post)
+2026-08-09 18:36:17,460  INFO      agent.graph — tick complete — agent=9cfcef91-f63b-4575-afaa-69f3b8e188be tick=1fe3121e-f836-4a3b-aa94-a705cdaaca91
