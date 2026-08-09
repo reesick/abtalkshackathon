@@ -1,9 +1,10 @@
 """
-Dry-run harness for the new media pipeline: runs the REAL node functions
-(discover -> filter -> judge -> decide_format -> write_script ->
-plan_media_assets) and STOPS before generate_assets, generate_tts, or
-assemble_video — i.e. stops before any paid API call (Flora image gen,
-ElevenLabs TTS, Flora video gen).
+Dry-run harness for the current pipeline (Kabir Rao persona, text +
+single static image only — see ml_engineer_persona.md). Runs the REAL node
+functions (discover -> filter -> judge -> decide_format -> [write_script ->
+plan_media_assets] -> write_post -> generate_rationale) and STOPS before
+generate_assets — i.e. stops before the one paid API call in this graph
+(Flora image gen).
 
 Captures every stage's input/output into DRY_RUN_REPORT.md.
 """
@@ -34,12 +35,32 @@ BASE_STATE = {
     "agent_id": "dry-run",
     "tick_id": "dry-run-tick",
     "persona": {
-        "name": "Ada Shen",
-        "domain": "ML infrastructure",
-        "voice_rules": "terse, technically skeptical, avoids hype",
-        "recurring_opinions": ["skeptical of benchmark-only claims", "pro open-weights"],
-        "stable_interests": ["inference efficiency", "model serving", "open source tooling"],
-        "pushback": ["hype-only announcements", "closed-source-only research"],
+        "name": "Kabir Rao",
+        "domain": "ML engineering",
+        "voice_rules": "terse, story-first, earns the opinion by showing the scar first, no hype",
+        "recurring_opinions": [
+            "most published benchmarks are marketing, not science",
+            "a team that cannot explain its eval methodology in one sentence does not have one",
+            "agents are not products, reliability is the product",
+            "data cleaning is more valuable than model architecture for 90% of teams",
+            "most AI failures are specification failures, not model failures",
+            "cost is a feature, if you cannot say what a query costs you, you do not understand your product",
+        ],
+        "stable_interests": [
+            "model evaluation and why most evals lie",
+            "GPU and inference cost economics",
+            "RAG systems and why they break in the real world",
+            "the gap between demo-quality and production-quality AI",
+            "hiring signal in ML roles",
+            "agent hype vs agent reality",
+            "data quality as the unsexy bottleneck",
+            "open source vs closed lab dynamics",
+        ],
+        "pushback": [
+            "hype-only announcements with no technical substance",
+            "unverified benchmark claims",
+            "leaderboard-only wins",
+        ],
     },
     "persona_doc": {},
     "memory_context": [],
@@ -62,11 +83,17 @@ BASE_STATE = {
 async def main():
     REPORT_SECTIONS.append(f"# Media Pipeline Dry Run\n\nGenerated: {datetime.now(timezone.utc).isoformat()}\n")
     REPORT_SECTIONS.append(
-        "Scope: runs discover_topics -> filter_seen -> editorial_judge -> "
-        "decide_format -> write_script -> plan_media_assets using the REAL "
-        "node code. Deliberately STOPS before generate_assets (Flora image "
-        "gen $), generate_tts (ElevenLabs $), and assemble_video (Flora "
-        "video gen $) — no paid generation API is called in this run.\n"
+        "Persona: Kabir Rao (ML engineering) — see ml_engineer_persona.md, the "
+        "canonical spec this pipeline implements. Scope: text + single static "
+        "image per post only (video/TTS out of scope, disconnected from the "
+        "graph — see agent/graph.py header comment).\n\n"
+        "This run executes discover_topics -> filter_seen -> editorial_judge -> "
+        "decide_format -> [write_script -> plan_media_assets, image_post path "
+        "only] -> write_post -> generate_rationale using the REAL node code. "
+        "It deliberately STOPS before generate_assets (Flora image gen $) — "
+        "the only paid API call in this graph — and instead previews the "
+        "exact prompt that call would send, using the real pure-function "
+        "prompt builder.\n"
     )
 
     state = dict(BASE_STATE)
@@ -113,123 +140,83 @@ async def main():
     log_section(
         "Step 4 — decide_format",
         f"Input title: {selected.get('title', '')}\n\n"
-        f"Detected content_type (deterministic router): {detected_format}\n\n"
-        f"NOTE: forcing content_type='video_post' below to exercise the full "
-        f"media pipeline regardless of what the router picked, since the "
-        f"user wants to see the whole media planning chain run."
-    )
-    state["content_type"] = "video_post"
-
-    # --- Step 5: write_script ---
-    from agent.nodes.script import write_script
-    state = await asyncio.wait_for(write_script(state), timeout=60)
-    log_section(
-        "Step 5 — write_script",
-        f"Input: content_type=video_post, topic={selected.get('title', '')}\n\n"
-        f"Output — script:\n{dump(state.get('script'))}"
+        f"Detected content_type (deterministic router, image_post/text_post "
+        f"only — no video routing exists anymore): {detected_format}"
     )
 
-    # --- Step 6: plan_media_assets ---
-    from agent.nodes.plan_assets import plan_media_assets
-    state = await asyncio.wait_for(plan_media_assets(state), timeout=60)
+    if detected_format == "image_post":
+        # --- Step 5: write_script (single visual idea) ---
+        from agent.nodes.script import write_script
+        state = await asyncio.wait_for(write_script(state), timeout=60)
+        log_section(
+            "Step 5 — write_script",
+            f"Input: content_type=image_post, topic={selected.get('title', '')}\n\n"
+            f"Output — script (hook + one visual idea):\n{dump(state.get('script'))}"
+        )
+
+        # --- Step 6: plan_media_assets ---
+        from agent.nodes.plan_assets import plan_media_assets
+        state = await asyncio.wait_for(plan_media_assets(state), timeout=60)
+        log_section(
+            "Step 6 — plan_media_assets",
+            f"Input: {len(state['script'].get('beats', []))} script beat(s)\n\n"
+            f"Output — media_plan ({len(state['media_plan'])} planned asset(s), "
+            f"should be exactly 1 for the single-image-per-post scope):\n"
+            + dump(state["media_plan"])
+        )
+
+        # --- STOP HERE — next real node is generate_assets (Flora $) ---
+        from agent.nodes.assets import build_asset_prompt
+        preview_prompts = [
+            {"asset_id": a["asset_id"], "would_send_prompt": build_asset_prompt(a)}
+            for a in state["media_plan"]
+        ]
+        log_section(
+            "STOPPED — before paid generation call",
+            "`generate_assets` was NOT executed — it calls the Flora REST "
+            "`/generate` endpoint (Nano Banana 2 image gen, real cost per "
+            "call). Below is the exact prompt it would send, built by the "
+            "real `build_asset_prompt()` pure function — no API call made.\n\n"
+            + dump(preview_prompts)
+        )
+
+        # write_post needs *some* image_assets to reference — use a clearly
+        # labeled placeholder URL (not real, no Flora call made) so the
+        # caption-writing prompt runs exactly as it would post-generation.
+        state["image_assets"] = [
+            {
+                "url": f"<PLACEHOLDER_NOT_REAL_would_be_flora_image_url_for_{a['asset_id']}>",
+                "prompt_used": a["prompt"] if a.get("prompt") else preview_prompts[i]["would_send_prompt"],
+                "beat_index": i,
+            }
+            for i, a in enumerate(state["media_plan"])
+        ]
+    else:
+        log_section(
+            "Skipped — write_script / plan_media_assets / generate_assets",
+            "Router picked text_post, which skips the script/asset nodes "
+            "entirely in the real graph (see agent/graph.py _after_format)."
+        )
+
+    # --- write_post (real LLM call, no paid media API) ---
+    from agent.nodes.post import write_post
+    state = await asyncio.wait_for(write_post(state), timeout=60)
     log_section(
-        "Step 6 — plan_media_assets",
-        f"Input: {len(state['script'].get('beats', []))} script beats\n\n"
-        f"Output — media_plan ({len(state['media_plan'])} planned assets):\n"
-        + dump(state["media_plan"])
+        "Step 7 — write_post",
+        f"Input: content_type={state['content_type']}\n\n"
+        f"Output — post_text (real LLM call, Kabir Rao voice, sanitized for "
+        f"banned patterns per ml_engineer_persona.md section 5):\n\n"
+        + state.get("post_text", "(none)")
     )
 
-    # --- STOP HERE — next real nodes would be generate_assets (Flora $),
-    # generate_tts (ElevenLabs $), assemble_video (Flora $) ---
+    # --- generate_rationale (real LLM call) ---
+    from agent.nodes.rationale import generate_rationale
+    state = await asyncio.wait_for(generate_rationale(state), timeout=60)
     log_section(
-        "STOPPED — before paid generation calls",
-        "The following nodes were NOT executed in this dry run because they "
-        "call paid external APIs:\n\n"
-        "- `generate_assets` — Flora REST /generate (Nano Banana 2 image gen, "
-        "~$0.07-0.11 per asset based on tonight's real runs)\n"
-        "- `generate_tts` — ElevenLabs /text-to-speech (per-beat narration audio)\n"
-        "- `build_omni_prompt` — free (no API call), but not run since it "
-        "depends on validated output from the two paid steps above\n"
-        "- `assemble_video` — Flora REST /generate (Gemini-Omni-Flash video "
-        "gen, ~144 credits per run)\n\n"
-        f"To preview what generate_assets WOULD send, here is the exact "
-        f"layered prompt it would build for each planned asset "
-        f"(build_asset_prompt is a pure function — calling it does not hit "
-        f"any API):\n"
-    )
-
-    from agent.nodes.assets import build_asset_prompt
-    preview_prompts = [
-        {"asset_id": a["asset_id"], "would_send_prompt": build_asset_prompt(a)}
-        for a in state["media_plan"]
-    ]
-    REPORT_SECTIONS.append(dump(preview_prompts))
-
-    # --- Preview: TTS narration chunks (pure function, no ElevenLabs call) ---
-    from agent.nodes.generate_tts import build_narration_chunks, _estimate_duration
-    narration_chunks = build_narration_chunks(state["script"], len(state["media_plan"]))
-    tts_preview = [
-        {
-            "scene_id": asset["scene_id"],
-            "would_send_text_to_elevenlabs": chunk,
-            "estimated_duration_seconds": _estimate_duration(chunk),
-        }
-        for asset, chunk in zip(state["media_plan"], narration_chunks)
-    ]
-    log_section(
-        "Preview — generate_tts (narration chunks, NOT sent to ElevenLabs)",
-        "This is the exact text `generate_tts` would send to ElevenLabs "
-        "per beat, computed by the real `build_narration_chunks()` pure "
-        "function — no synthesis API call made. Voice ID configured: "
-        f"{__import__('os').environ.get('ELEVENLABS_VOICE_ID', '(not set)')}\n\n"
-        + dump(tts_preview)
-    )
-
-    # --- Preview: Omni video prompt (structured 9-section brief) ---
-    # build_omni_prompt requires approved (not just planned) assets and real
-    # tts_segments with real audio_url values. Since neither exists without
-    # paid calls, we construct a CLEARLY LABELED simulated state: same
-    # media_plan entries marked "approved" with placeholder output_url
-    # strings (not real Flora URLs), and tts_segments using the real
-    # narration text + estimated duration from above (not real audio_url).
-    # This shows the exact prompt STRUCTURE and CONTENT the real pipeline
-    # would produce once assets are actually approved — it does not fabricate
-    # any topic/script/narration content, only stands in for not-yet-existing
-    # media URLs.
-    from agent.nodes.omni_prompt import build_omni_prompt
-
-    simulated_media_plan = [
-        {**a, "status": "approved", "output_url": f"<PLACEHOLDER_NOT_REAL_would_be_flora_image_url_for_{a['asset_id']}>"}
-        for a in state["media_plan"]
-    ]
-    simulated_tts_segments = [
-        {
-            "scene_id": asset["scene_id"],
-            "audio_url": f"<PLACEHOLDER_NOT_REAL_would_be_flora_audio_url_for_{asset['scene_id']}>",
-            "duration_seconds": preview["estimated_duration_seconds"],
-            "text": preview["would_send_text_to_elevenlabs"],
-        }
-        for asset, preview in zip(state["media_plan"], tts_preview)
-    ]
-
-    simulated_state = {
-        **state,
-        "media_plan": simulated_media_plan,
-        "tts_segments": simulated_tts_segments,
-    }
-    simulated_state = build_omni_prompt(simulated_state)
-
-    log_section(
-        "Preview — build_omni_prompt (structured Omni video prompt)",
-        "IMPORTANT: this prompt was built by the REAL `build_omni_prompt()` "
-        "function using the REAL topic/script/narration content from this "
-        "run. The only fabricated parts are the asset/audio URL strings "
-        "(clearly marked `<PLACEHOLDER_NOT_REAL_...>`) standing in for URLs "
-        "that don't exist yet since no paid image/TTS calls were made. "
-        "Every other field — video intent, scene actions, narration text, "
-        "style constraints — is exactly what the real pipeline would send "
-        "to Gemini-Omni-Flash once real asset/audio URLs are substituted in.\n\n"
-        "```\n" + (simulated_state.get("omni_prompt") or "(prompt build failed)") + "\n```"
+        "Step 8 — generate_rationale",
+        "Output — rationale (section 8 template: selected_because / "
+        "relevant_now_because / rejected_alternatives / sources):\n\n"
+        + dump(state.get("rationale"))
     )
 
     # Write the report
